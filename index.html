@@ -24,24 +24,31 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         .controls {
-            display: flex;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 15px;
             margin-bottom: 20px;
-            align-items: center;
+            align-items: start;
         }
         .controls > div {
-            margin-right: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        .generate-btn-container {
+            grid-column: 1 / -1;
+            margin-top: 10px;
         }
         label {
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
+            font-size: 0.9em;
         }
         select, input, button {
             padding: 8px 12px;
             border-radius: 4px;
             border: 1px solid #ddd;
+            width: 100%;
         }
         .input-with-label {
             display: flex;
@@ -49,6 +56,11 @@
         }
         .input-with-label input {
             margin-right: 5px;
+            flex-grow: 1;
+        }
+        .input-with-label span {
+            white-space: nowrap;
+            font-size: 0.9em;
         }
         button {
             background-color: #3498db;
@@ -56,6 +68,7 @@
             border: none;
             cursor: pointer;
             transition: background-color 0.3s;
+            width: 100%;
         }
         button:hover {
             background-color: #2980b9;
@@ -106,11 +119,22 @@
             display: none;
         }
 
-        /* Responsive design */
-        @media (max-width: 600px) {
+        /* Responsive design - finer grain control */
+        @media (max-width: 800px) {
             .controls {
-                flex-direction: column;
-                align-items: flex-start;
+                grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            }
+        }
+        
+        @media (max-width: 500px) {
+            .controls {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .controls {
+                grid-template-columns: 1fr;
             }
             .exercises {
                 grid-template-columns: 1fr;
@@ -144,7 +168,9 @@
                     <span>numbers</span>
                 </div>
             </div>
-            <button id="generate-add-btn">Generate Addition Exercises</button>
+            <div class="generate-btn-container">
+                <button id="generate-add-btn">Generate Addition Exercises</button>
+            </div>
         </div>
         <div id="add-exercises" class="exercises"></div>
         <button id="show-all-add" class="show-all-btn">Show All Answers <span class="eye-icon">👁️</span></button>
@@ -166,7 +192,9 @@
                     <option value="dd_dd">Double-Digit × Double-Digit</option>
                 </select>
             </div>
-            <button id="generate-mult-btn">Generate Multiplication Exercises</button>
+            <div class="generate-btn-container">
+                <button id="generate-mult-btn">Generate Multiplication Exercises</button>
+            </div>
         </div>
         <div id="mult-exercises" class="exercises"></div>
         <button id="show-all-mult" class="show-all-btn">Show All Answers <span class="eye-icon">👁️</span></button>
@@ -189,7 +217,9 @@
                     <option value="fd_dd">Four-Digit ÷ Double-Digit</option>
                 </select>
             </div>
-            <button id="generate-div-btn">Generate Division Exercises</button>
+            <div class="generate-btn-container">
+                <button id="generate-div-btn">Generate Division Exercises</button>
+            </div>
         </div>
         <div id="div-exercises" class="exercises"></div>
         <button id="show-all-div" class="show-all-btn">Show All Answers <span class="eye-icon">👁️</span></button>
