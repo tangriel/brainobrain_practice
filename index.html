@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mental Math Trainer</title>
+    <style>
+        /* Basic styling for better readability */
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        .section {
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        .controls > div {
+            margin-right: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        select, input, button {
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        .input-with-label {
+            display: flex;
+            align-items: center;
+        }
+        .input-with-label input {
+            margin-right: 5px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .exercises {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .exercise {
+            background-color: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .answer {
+            color: #e74c3c;
+            font-weight: bold;
+            display: none;
+        }
+        .show-answer-btn {
+            background-color: #27ae60;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+        .show-all-btn {
+            background-color: #f39c12;
+            margin-top: 15px;
+        }
+        /* Eye icon styling */
+        .eye-icon {
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        .debug {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-top: 20px;
+            font-family: monospace;
+            white-space: pre;
+            display: none;
+        }
+
+        /* Responsive design */
+        @media (max-width: 600px) {
+            .controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .exercises {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Mental Math Trainer</h1>
+    
+    <!-- Addition Section -->
+    <div class="section" id="addition-section">
+        <h2>Addition Exercises</h2>
+        <div class="controls">
+            <div>
+                <label for="add-count">Number of Exercises:</label>
+                <input type="number" id="add-count" min="1" max="20" value="3">
+            </div>
+            <div>
+                <label for="add-type">Number Type:</label>
+                <select id="add-type">
+                    <option value="sd">Single-Digit Only</option>
+                    <option value="dd">Double-Digit Only</option>
+                    <option value="mixed" selected>Single & Double-Digit Mix</option>
+                </select>
+            </div>
+            <div>
+                <label for="add-addends">Number of Addends:</label>
+                <div class="input-with-label">
+                    <input type="number" id="add-addends" min="3" max="20" value="4">
+                    <span>numbers</span>
+                </div>
+            </div>
+            <button id="generate-add-btn">Generate Addition Exercises</button>
+        </div>
+        <div id="add-exercises" class="exercises"></div>
+        <button id="show-all-add" class="show-all-btn">Show All Answers <span class="eye-icon">👁️</span></button>
+    </div>
+    
+    <!-- Multiplication Section -->
+    <div class="section" id="multiplication-section">
+        <h2>Multiplication Exercises</h2>
+        <div class="controls">
+            <div>
+                <label for="mult-count">Number of Exercises:</label>
+                <input type="number" id="mult-count" min="1" max="20" value="3">
+            </div>
+            <div>
+                <label for="mult-type">Number Type:</label>
+                <select id="mult-type">
+                    <option value="sd_sd">Single-Digit × Single-Digit</option>
+                    <option value="dd_sd" selected>Double-Digit × Single-Digit</option>
+                    <option value="dd_dd">Double-Digit × Double-Digit</option>
+                </select>
+            </div>
+            <button id="generate-mult-btn">Generate Multiplication Exercises</button>
+        </div>
+        <div id="mult-exercises" class="exercises"></div>
+        <button id="show-all-mult" class="show-all-btn">Show All Answers <span class="eye-icon">👁️</span></button>
+    </div>
+    
+    <!-- Division Section -->
+    <div class="section" id="division-section">
+        <h2>Division Exercises</h2>
+        <div class="controls">
+            <div>
+                <label for="div-count">Number of Exercises:</label>
+                <input type="number" id="div-count" min="1" max="20" value="3">
+            </div>
+            <div>
+                <label for="div-type">Number Type:</label>
+                <select id="div-type">
+                    <option value="dd_sd" selected>Double-Digit ÷ Single-Digit</option>
+                    <option value="td_sd">Triple-Digit ÷ Single-Digit</option>
+                    <option value="fd_sd">Four-Digit ÷ Single-Digit</option>
+                    <option value="fd_dd">Four-Digit ÷ Double-Digit</option>
+                </select>
+            </div>
+            <button id="generate-div-btn">Generate Division Exercises</button>
+        </div>
+        <div id="div-exercises" class="exercises"></div>
+        <button id="show-all-div" class="show-all-btn">Show All Answers <span class="eye-icon">👁️</span></button>
+    </div>
+
+    <footer>
+        Created for mental arithmetic practice - BrainOBrain Exercises
+    </footer>
+
+    <script>
+        // ===== UTILITY FUNCTIONS =====
+
+        // Generate a random integer between min and max (inclusive)
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // Generate a random single digit (2-9) excluding 1
+        function getRandomSingleDigit() {
+            return getRandomInt(2, 9);
+        }
+
+        // Generate a random double digit (11-99) excluding 10
+        function getRandomDoubleDigit() {
+            // Make sure we don't get 10
+            const num = getRandomInt(11, 99);
+            return num;
+        }
+
+        // Generate a random triple digit (100-999)
+        function getRandomTripleDigit() {
+            return getRandomInt(100, 999);
+        }
+
+        // Generate a random four digit (1000-9999)
+        function getRandomFourDigit() {
+            return getRandomInt(1000, 9999);
+        }
+
+        // Shuffle an array (Fisher-Yates algorithm)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // ===== ADDITION FUNCTIONS =====
+
+        // Generate addition exercise with properly mixed SD and DD numbers
+        function generateAdditionExercise(type, numAddends) {
+            let addends = [];
+            let runningSum = 0;
+            const maxNegatives = Math.floor(numAddends / 3); // Maximum allowed negatives
+            let numNegatives = 0;
+            
+            // First, create all the addends without considering running sum
+            if (type === "sd") {
+                // All single-digit numbers
+                for (let i = 0; i < numAddends; i++) {
+                    addends.push(getRandomSingleDigit());
+                }
+            } else if (type === "dd") {
+                // All double-digit numbers
+                for (let i = 0; i < numAddends; i++) {
+                    addends.push(getRandomDoubleDigit());
+                }
+            } else if (type === "mixed") {
+                // Mix of single and double-digit numbers
+                const doubleDigitCount = Math.max(0, Math.min(
+                    numAddends,
+                    getRandomInt(Math.floor(numAddends / 2) - 1, Math.floor(numAddends / 2) + 1)
+                ));
+                
+                // Create array of addend types (SD or DD)
+                let addendsTypes = [];
+                for (let i = 0; i < numAddends; i++) {
+                    if (i < doubleDigitCount) {
+                        addendsTypes.push("dd");
+                    } else {
+                        addendsTypes.push("sd");
+                    }
+                }
+                
+                // Shuffle the types to ensure random mixing
+                addendsTypes = shuffleArray(addendsTypes);
+                
+                // Generate numbers based on the shuffled types
+                for (let i = 0; i < numAddends; i++) {
+                    if (addendsTypes[i] === "dd") {
+                        addends.push(getRandomDoubleDigit());
+                    } else {
+                        addends.push(getRandomSingleDigit());
+                    }
+                }
+            }
+            
+            // Sort by absolute value (descending) to prioritize larger numbers first
+            addends.sort((a, b) => Math.abs(b) - Math.abs(a));
+            
+            const finalAddends = [];
+            
+            // Process addends in the determined order
+            for (const num of addends) {
+                let finalNum = num;
+                
+                // Decide if this should be negative
+                if (numNegatives < maxNegatives && Math.random() < 0.3) {
+                    // Only make it negative if the running sum will remain positive
+                    if (runningSum > num) {
+                        finalNum = -num;
+                        numNegatives++;
+                    }
+                }
+                
+                finalAddends.push(finalNum);
+                runningSum += finalNum;
+            }
+            
+            // Shuffle the final addends to ensure random order of positive and negative numbers
+            // BUT we need to track the running sum to ensure it stays positive
+            let validOrder = false;
+            let attempts = 0;
+            let bestFinalAddends = [...finalAddends];
+            
+            while (!validOrder && attempts < 10) {
+                attempts++;
+                const testAddends = [...finalAddends];
+                shuffleArray(testAddends);
+                
+                // Check if this order keeps all intermediate sums positive
+                let testSum = 0;
+                let allPositive = true;
+                
+                for (const num of testAddends) {
+                    testSum += num;
+                    if (testSum < 0) {
+                        allPositive = false;
+                        break;
+                    }
+                }
+                
+                if (allPositive) {
+                    bestFinalAddends = testAddends;
+                    validOrder = true;
+                    break;
+                }
+            }
+            
+            // If we couldn't find a valid shuffle, we'll fall back to the original order
+            return {
+                addends: bestFinalAddends,
+                answer: bestFinalAddends.reduce((sum, num) => sum + num, 0)
+            };
+        }
+
+        // ===== MULTIPLICATION FUNCTIONS =====
+
+        // Generate multiplication exercise (excluding 1 and 10)
+        function generateMultiplicationExercise(type) {
+            let num1, num2;
+            
+            switch (type) {
+                case "sd_sd": // Single-digit × Single-digit
+                    num1 = getRandomSingleDigit();
+                    num2 = getRandomSingleDigit();
+                    break;
+                case "dd_sd": // Double-digit × Single-digit
+                    num1 = getRandomDoubleDigit();
+                    num2 = getRandomSingleDigit();
+                    break;
+                case "dd_dd": // Double-digit × Double-digit
+                    num1 = getRandomDoubleDigit();
+                    do {
+                        num2 = getRandomDoubleDigit();
+                    } while (num2 === 10);
+                    break;
+                default:
+                    num1 = getRandomSingleDigit();
+                    num2 = getRandomSingleDigit();
+            }
+            
+            return {
+                factors: [num1, num2],
+                answer: num1 * num2
+            };
+        }
+
+        // ===== DIVISION FUNCTIONS =====
+
+        // Generate division exercise (ensuring clean division, excluding divisors 1 and 10)
+        function generateDivisionExercise(type) {
+            let dividend, divisor;
+            
+            switch (type) {
+                case "dd_sd": // Double-digit ÷ Single-digit
+                    divisor = getRandomSingleDigit(); // Already excludes 1
+                    // Generate a multiple of the divisor in the double-digit range
+                    const min1 = Math.ceil(10 / divisor);
+                    const max1 = Math.floor(99 / divisor);
+                    const factor1 = getRandomInt(min1, max1);
+                    dividend = divisor * factor1;
+                    break;
+                case "td_sd": // Triple-digit ÷ Single-digit
+                    divisor = getRandomSingleDigit(); // Already excludes 1
+                    const min2 = Math.ceil(100 / divisor);
+                    const max2 = Math.floor(999 / divisor);
+                    const factor2 = getRandomInt(min2, max2);
+                    dividend = divisor * factor2;
+                    break;
+                case "fd_sd": // Four-digit ÷ Single-digit
+                    divisor = getRandomSingleDigit(); // Already excludes 1
+                    const min3 = Math.ceil(1000 / divisor);
+                    const max3 = Math.floor(9999 / divisor);
+                    const factor3 = getRandomInt(min3, max3);
+                    dividend = divisor * factor3;
+                    break;
+                case "fd_dd": // Four-digit ÷ Double-digit
+                    // Exclude 10 as divisor
+                    do {
+                        divisor = getRandomInt(11, 50); // Limiting to make mental math more feasible
+                    } while (divisor === 10);
+                    
+                    const min4 = Math.ceil(1000 / divisor);
+                    const max4 = Math.floor(9999 / divisor);
+                    const factor4 = getRandomInt(min4, max4);
+                    dividend = divisor * factor4;
+                    break;
+                default:
+                    divisor = getRandomSingleDigit(); // Already excludes 1
+                    dividend = divisor * getRandomInt(10, 99);
+            }
+            
+            // Double-check that our result is an integer
+            const result = dividend / divisor;
+            console.log(`Division: ${dividend} ÷ ${divisor} = ${result}`);
+            if (result !== Math.floor(result)) {
+                console.error("Non-integer division result generated!");
+            }
+            
+            return {
+                dividend: dividend,
+                divisor: divisor,
+                answer: result
+            };
+        }
+
+        // ===== UI FUNCTIONS =====
+
+        // Create an addition exercise HTML element
+        function createAdditionExerciseElement(exercise, index) {
+            const div = document.createElement('div');
+            div.className = 'exercise';
+            
+            let exerciseHtml = `<strong>${index}.</strong> `;
+            
+            // Format the addends
+            for (let i = 0; i < exercise.addends.length; i++) {
+                const num = exercise.addends[i];
+                if (i === 0) {
+                    exerciseHtml += num;
+                } else {
+                    exerciseHtml += num < 0 ? ` - ${Math.abs(num)}` : ` + ${num}`;
+                }
+            }
+            
+            exerciseHtml += ` = <span class="answer">`;
+            exerciseHtml += exercise.answer;
+            exerciseHtml += `</span>`;
+            
+            div.innerHTML = exerciseHtml;
+            
+            // Add show answer button
+            const showBtn = document.createElement('button');
+            showBtn.className = 'show-answer-btn';
+            showBtn.innerHTML = 'Show Answer <span class="eye-icon">👁️</span>';
+            showBtn.onclick = function() {
+                div.querySelector('.answer').style.display = 'inline';
+                showBtn.style.display = 'none';
+            };
+            div.appendChild(showBtn);
+            
+            return div;
+        }
+
+        // Create a multiplication exercise HTML element
+        function createMultiplicationExerciseElement(exercise, index) {
+            const div = document.createElement('div');
+            div.className = 'exercise';
+            
+            const num1 = exercise.factors[0];
+            const num2 = exercise.factors[1];
+            
+            div.innerHTML = `
+                <strong>${index}.</strong> ${num1} × ${num2} = 
+                <span class="answer">${exercise.answer}</span>
+            `;
+            
+            // Add show answer button
+            const showBtn = document.createElement('button');
+            showBtn.className = 'show-answer-btn';
+            showBtn.innerHTML = 'Show Answer <span class="eye-icon">👁️</span>';
+            showBtn.onclick = function() {
+                div.querySelector('.answer').style.display = 'inline';
+                showBtn.style.display = 'none';
+            };
+            div.appendChild(showBtn);
+            
+            return div;
+        }
+
+        // Create a division exercise HTML element
+        function createDivisionExerciseElement(exercise, index) {
+            const div = document.createElement('div');
+            div.className = 'exercise';
+            
+            div.innerHTML = `
+                <strong>${index}.</strong> ${exercise.dividend} ÷ ${exercise.divisor} = 
+                <span class="answer">${exercise.answer}</span>
+            `;
+            
+            // Add show answer button
+            const showBtn = document.createElement('button');
+            showBtn.className = 'show-answer-btn';
+            showBtn.innerHTML = 'Show Answer <span class="eye-icon">👁️</span>';
+            showBtn.onclick = function() {
+                div.querySelector('.answer').style.display = 'inline';
+                showBtn.style.display = 'none';
+            };
+            div.appendChild(showBtn);
+            
+            return div;
+        }
+
+        // ===== EVENT LISTENERS =====
+
+        // Addition generation
+        document.getElementById('generate-add-btn').addEventListener('click', function() {
+            const count = parseInt(document.getElementById('add-count').value);
+            const type = document.getElementById('add-type').value;
+            const numAddends = parseInt(document.getElementById('add-addends').value);
+            
+            const exercisesContainer = document.getElementById('add-exercises');
+            exercisesContainer.innerHTML = '';
+            
+            for (let i = 1; i <= count; i++) {
+                const exercise = generateAdditionExercise(type, numAddends);
+                const element = createAdditionExerciseElement(exercise, i);
+                exercisesContainer.appendChild(element);
+            }
+        });
+
+        // Multiplication generation
+        document.getElementById('generate-mult-btn').addEventListener('click', function() {
+            const count = parseInt(document.getElementById('mult-count').value);
+            const type = document.getElementById('mult-type').value;
+            
+            const exercisesContainer = document.getElementById('mult-exercises');
+            exercisesContainer.innerHTML = '';
+            
+            for (let i = 1; i <= count; i++) {
+                const exercise = generateMultiplicationExercise(type);
+                const element = createMultiplicationExerciseElement(exercise, i);
+                exercisesContainer.appendChild(element);
+            }
+        });
+
+        // Division generation
+        document.getElementById('generate-div-btn').addEventListener('click', function() {
+            const count = parseInt(document.getElementById('div-count').value);
+            const type = document.getElementById('div-type').value;
+            
+            const exercisesContainer = document.getElementById('div-exercises');
+            exercisesContainer.innerHTML = '';
+            
+            for (let i = 1; i <= count; i++) {
+                const exercise = generateDivisionExercise(type);
+                const element = createDivisionExerciseElement(exercise, i);
+                exercisesContainer.appendChild(element);
+            }
+        });
+
+        // Show all answers buttons
+        document.getElementById('show-all-add').addEventListener('click', function() {
+            showAllAnswers('add-exercises');
+        });
+
+        document.getElementById('show-all-mult').addEventListener('click', function() {
+            showAllAnswers('mult-exercises');
+        });
+
+        document.getElementById('show-all-div').addEventListener('click', function() {
+            showAllAnswers('div-exercises');
+        });
+
+        function showAllAnswers(containerId) {
+            const container = document.getElementById(containerId);
+            const answers = container.querySelectorAll('.answer');
+            const buttons = container.querySelectorAll('.show-answer-btn');
+            
+            answers.forEach(answer => {
+                answer.style.display = 'inline';
+            });
+            
+            buttons.forEach(button => {
+                button.style.display = 'none';
+            });
+        }
+
+        // Initialize with some example exercises
+        document.getElementById('generate-add-btn').click();
+        document.getElementById('generate-mult-btn').click();
+        document.getElementById('generate-div-btn').click();
+    </script>
+</body>
+</html>
