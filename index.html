@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
@@ -194,11 +194,18 @@
             background: #6b3f2b;
         }
 
+        .top-space {
+            height: 58px; /* room above the beam for top bead to rest when inactive */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         .bottom-beads {
             display: flex;
             flex-direction: column;
             gap: 12px;
-            margin-top: 10px;
+            margin-top: 8px;
             align-items: center;
         }
 
@@ -206,7 +213,7 @@
             height: 8px;
             background: #2f2f2f;
             width: 100%;
-            margin: 8px 0;
+            margin: 6px 0;
             border-radius: 4px;
             position: relative;
             box-shadow: 0 1px 0 rgba(255,255,255,0.08) inset;
@@ -226,12 +233,19 @@
             opacity: 0.95;
         }
 
-        /* Default bead positions: top bead up, bottom beads down */
-        .top-bead { transform: translateY(0); }
-        .top-bead.active { transform: translateY(36px); }
+        /*
+         * Correct Soroban bead movement:
+         * - top (heaven) bead is above the beam; inactive -> moved away (up), active -> moved down to beam
+         * - bottom (earth) beads are below the beam; inactive -> moved away (down), active -> moved up to beam
+         */
 
-        .bottom-bead { transform: translateY(36px); }
-        .bottom-bead.active { transform: translateY(0); }
+        /* top bead: inactive moved up (away), active moved down (towards beam) */
+        .top-bead { transform: translateY(-36px); }    /* up (inactive) */
+        .top-bead.active { transform: translateY(0); } /* down to beam (active) */
+
+        /* bottom beads: inactive moved down (away), active moved up (towards beam) */
+        .bottom-bead { transform: translateY(36px); }    /* down (inactive) */
+        .bottom-bead.active { transform: translateY(0); } /* up to beam (active) */
 
         /* Cover inside rail to hide beads without covering controls */
         .abacus-cover {
@@ -295,6 +309,7 @@
             }
             .abacus-column { width: 46px; height: 190px; }
             .abacus-bead, .top-bead, .bottom-bead { width: 32px; height: 32px; }
+            .top-space { height: 48px; }
         }
         @media (max-width: 500px) {
             .controls { grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -418,7 +433,6 @@
         <div class="abacus" id="abacus-display" aria-live="polite">
             <div class="abacus-rail" id="abacus-rail">
                 <!-- columns generated dynamically -->
-                <!-- abacus-cover will be appended here by buildAbacusColumns (or present initially) -->
                 <div class="abacus-cover" id="abacus-cover">Memorize the beads... (hidden)</div>
             </div>
 
@@ -440,34 +454,26 @@
     <script>
         // ===== UTILITY FUNCTIONS =====
 
-        // Generate a random integer between min and max (inclusive)
         function getRandomInt(min, max) {
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
 
-        // Generate a random single digit (2-9) excluding 1
         function getRandomSingleDigit() {
             return getRandomInt(2, 9);
         }
 
-        // Generate a random double digit (11-99) excluding 10
         function getRandomDoubleDigit() {
-            // Make sure we don't get 10
-            const num = getRandomInt(11, 99);
-            return num;
+            return getRandomInt(11, 99);
         }
 
-        // Generate a random triple digit (100-999)
         function getRandomTripleDigit() {
             return getRandomInt(100, 999);
         }
 
-        // Generate a random four digit (1000-9999)
         function getRandomFourDigit() {
             return getRandomInt(1000, 9999);
         }
 
-        // Shuffle an array (Fisher-Yates algorithm)
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -476,307 +482,153 @@
             return array;
         }
 
-        // ===== ADDITION FUNCTIONS =====
+        // ===== ADDITION / MULTIPLICATION / DIVISION (kept original logic) =====
 
-        // Generate addition exercise with properly mixed SD and DD numbers
         function generateAdditionExercise(type, numAddends) {
             let addends = [];
             let runningSum = 0;
-            const maxNegatives = Math.floor(numAddends / 3); // Maximum allowed negatives
+            const maxNegatives = Math.floor(numAddends / 3);
             let numNegatives = 0;
 
-            // First, create all the addends without considering running sum
             if (type === "sd") {
-                // All single-digit numbers
-                for (let i = 0; i < numAddends; i++) {
-                    addends.push(getRandomSingleDigit());
-                }
+                for (let i = 0; i < numAddends; i++) addends.push(getRandomSingleDigit());
             } else if (type === "dd") {
-                // All double-digit numbers
-                for (let i = 0; i < numAddends; i++) {
-                    addends.push(getRandomDoubleDigit());
-                }
-            } else if (type === "mixed") {
-                // Mix of single and double-digit numbers
+                for (let i = 0; i < numAddends; i++) addends.push(getRandomDoubleDigit());
+            } else {
                 const doubleDigitCount = Math.max(0, Math.min(
                     numAddends,
                     getRandomInt(Math.floor(numAddends / 2) - 1, Math.floor(numAddends / 2) + 1)
                 ));
-
-                // Create array of addend types (SD or DD)
                 let addendsTypes = [];
-                for (let i = 0; i < numAddends; i++) {
-                    if (i < doubleDigitCount) {
-                        addendsTypes.push("dd");
-                    } else {
-                        addendsTypes.push("sd");
-                    }
-                }
-
-                // Shuffle the types to ensure random mixing
+                for (let i = 0; i < numAddends; i++) addendsTypes.push(i < doubleDigitCount ? "dd" : "sd");
                 addendsTypes = shuffleArray(addendsTypes);
-
-                // Generate numbers based on the shuffled types
                 for (let i = 0; i < numAddends; i++) {
-                    if (addendsTypes[i] === "dd") {
-                        addends.push(getRandomDoubleDigit());
-                    } else {
-                        addends.push(getRandomSingleDigit());
-                    }
+                    addends.push(addendsTypes[i] === "dd" ? getRandomDoubleDigit() : getRandomSingleDigit());
                 }
             }
 
-            // Sort by absolute value (descending) to prioritize larger numbers first
             addends.sort((a, b) => Math.abs(b) - Math.abs(a));
-
             const finalAddends = [];
 
-            // Process addends in the determined order
             for (const num of addends) {
                 let finalNum = num;
-
-                // Decide if this should be negative
                 if (numNegatives < maxNegatives && Math.random() < 0.3) {
-                    // Only make it negative if the running sum will remain positive
                     if (runningSum > num) {
                         finalNum = -num;
                         numNegatives++;
                     }
                 }
-
                 finalAddends.push(finalNum);
                 runningSum += finalNum;
             }
 
-            // Shuffle the final addends to ensure random order of positive and negative numbers
-            // BUT we need to track the running sum to ensure it stays positive
-            let validOrder = false;
-            let attempts = 0;
             let bestFinalAddends = [...finalAddends];
-
-            while (!validOrder && attempts < 10) {
+            let attempts = 0;
+            while (attempts < 10) {
                 attempts++;
-                const testAddends = [...finalAddends];
-                shuffleArray(testAddends);
-
-                // Check if this order keeps all intermediate sums positive
-                let testSum = 0;
-                let allPositive = true;
-
-                for (const num of testAddends) {
-                    testSum += num;
-                    if (testSum < 0) {
-                        allPositive = false;
-                        break;
-                    }
+                const test = [...finalAddends];
+                shuffleArray(test);
+                let sum = 0;
+                let ok = true;
+                for (const n of test) {
+                    sum += n;
+                    if (sum < 0) { ok = false; break; }
                 }
-
-                if (allPositive) {
-                    bestFinalAddends = testAddends;
-                    validOrder = true;
-                    break;
-                }
+                if (ok) { bestFinalAddends = test; break; }
             }
 
-            // If we couldn't find a valid shuffle, we'll fall back to the original order
-            return {
-                addends: bestFinalAddends,
-                answer: bestFinalAddends.reduce((sum, num) => sum + num, 0)
-            };
+            return { addends: bestFinalAddends, answer: bestFinalAddends.reduce((s, n) => s + n, 0) };
         }
 
-        // ===== MULTIPLICATION FUNCTIONS =====
-
-        // Generate multiplication exercise (excluding 1 and 10)
         function generateMultiplicationExercise(type) {
             let num1, num2;
-
             switch (type) {
-                case "sd_sd": // Single-digit × Single-digit
-                    num1 = getRandomSingleDigit();
-                    num2 = getRandomSingleDigit();
-                    break;
-                case "dd_sd": // Double-digit × Single-digit
-                    num1 = getRandomDoubleDigit();
-                    num2 = getRandomSingleDigit();
-                    break;
-                case "td_sd": // Triple-digit × Single-digit
-                    num1 = getRandomTripleDigit();
-                    num2 = getRandomSingleDigit();
-                    break;
-                case "dd_dd": // Double-digit × Double-digit
-                    num1 = getRandomDoubleDigit();
-                    do {
-                        num2 = getRandomDoubleDigit();
-                    } while (num2 === 10);
-                    break;
-                default:
-                    num1 = getRandomSingleDigit();
-                    num2 = getRandomSingleDigit();
+                case "sd_sd": num1 = getRandomSingleDigit(); num2 = getRandomSingleDigit(); break;
+                case "dd_sd": num1 = getRandomDoubleDigit(); num2 = getRandomSingleDigit(); break;
+                case "td_sd": num1 = getRandomTripleDigit(); num2 = getRandomSingleDigit(); break;
+                case "dd_dd": num1 = getRandomDoubleDigit(); do { num2 = getRandomDoubleDigit(); } while (num2 === 10); break;
+                default: num1 = getRandomSingleDigit(); num2 = getRandomSingleDigit();
             }
-
-            return {
-                factors: [num1, num2],
-                answer: num1 * num2
-            };
+            return { factors: [num1, num2], answer: num1 * num2 };
         }
 
-        // ===== DIVISION FUNCTIONS =====
-
-        // Generate division exercise (ensuring clean division, excluding divisors 1 and 10)
         function generateDivisionExercise(type) {
             let dividend, divisor;
-
             switch (type) {
-                case "dd_sd": // Double-digit ÷ Single-digit
-                    divisor = getRandomSingleDigit(); // Already excludes 1
-                    // Generate a multiple of the divisor in the double-digit range
-                    const min1 = Math.ceil(10 / divisor);
-                    const max1 = Math.floor(99 / divisor);
-                    const factor1 = getRandomInt(min1, max1);
-                    dividend = divisor * factor1;
+                case "dd_sd":
+                    divisor = getRandomSingleDigit();
+                    { const min1 = Math.ceil(10 / divisor), max1 = Math.floor(99 / divisor); const factor1 = getRandomInt(min1, max1); dividend = divisor * factor1; }
                     break;
-                case "td_sd": // Triple-digit ÷ Single-digit
-                    divisor = getRandomSingleDigit(); // Already excludes 1
-                    const min2 = Math.ceil(100 / divisor);
-                    const max2 = Math.floor(999 / divisor);
-                    const factor2 = getRandomInt(min2, max2);
-                    dividend = divisor * factor2;
+                case "td_sd":
+                    divisor = getRandomSingleDigit();
+                    { const min2 = Math.ceil(100 / divisor), max2 = Math.floor(999 / divisor); const factor2 = getRandomInt(min2, max2); dividend = divisor * factor2; }
                     break;
-                case "fd_sd": // Four-digit ÷ Single-digit
-                    divisor = getRandomSingleDigit(); // Already excludes 1
-                    const min3 = Math.ceil(1000 / divisor);
-                    const max3 = Math.floor(9999 / divisor);
-                    const factor3 = getRandomInt(min3, max3);
-                    dividend = divisor * factor3;
+                case "fd_sd":
+                    divisor = getRandomSingleDigit();
+                    { const min3 = Math.ceil(1000 / divisor), max3 = Math.floor(9999 / divisor); const factor3 = getRandomInt(min3, max3); dividend = divisor * factor3; }
                     break;
-                case "fd_dd": // Four-digit ÷ Double-digit
-                    // Exclude 10 as divisor
-                    do {
-                        divisor = getRandomInt(11, 50); // Limiting to make mental math more feasible
-                    } while (divisor === 10);
-
-                    const min4 = Math.ceil(1000 / divisor);
-                    const max4 = Math.floor(9999 / divisor);
-                    const factor4 = getRandomInt(min4, max4);
-                    dividend = divisor * factor4;
+                case "fd_dd":
+                    do { divisor = getRandomInt(11, 50); } while (divisor === 10);
+                    { const min4 = Math.ceil(1000 / divisor), max4 = Math.floor(9999 / divisor); const factor4 = getRandomInt(min4, max4); dividend = divisor * factor4; }
                     break;
                 default:
-                    divisor = getRandomSingleDigit(); // Already excludes 1
+                    divisor = getRandomSingleDigit();
                     dividend = divisor * getRandomInt(10, 99);
             }
-
-            // Double-check that our result is an integer
             const result = dividend / divisor;
-            console.log(`Division: ${dividend} ÷ ${divisor} = ${result}`);
-            if (result !== Math.floor(result)) {
-                console.error("Non-integer division result generated!");
-            }
-
-            return {
-                dividend: dividend,
-                divisor: divisor,
-                answer: result
-            };
+            return { dividend, divisor, answer: result };
         }
 
-        // ===== UI FUNCTIONS for arithmetic =====
-
-        // Create an addition exercise HTML element
+        // UI elements for arithmetic
         function createAdditionExerciseElement(exercise, index) {
             const div = document.createElement('div');
             div.className = 'exercise';
-
-            let exerciseHtml = `<strong>${index}.</strong> `;
-
-            // Format the addends
+            let html = `<strong>${index}.</strong> `;
             for (let i = 0; i < exercise.addends.length; i++) {
                 const num = exercise.addends[i];
-                if (i === 0) {
-                    exerciseHtml += num;
-                } else {
-                    exerciseHtml += num < 0 ? ` - ${Math.abs(num)}` : ` + ${num}`;
-                }
+                if (i === 0) html += num;
+                else html += num < 0 ? ` - ${Math.abs(num)}` : ` + ${num}`;
             }
-
-            exerciseHtml += ` = <span class="answer">`;
-            exerciseHtml += exercise.answer;
-            exerciseHtml += `</span>`;
-
-            div.innerHTML = exerciseHtml;
-
-            // Add show answer button
-            const showBtn = document.createElement('button');
-            showBtn.className = 'show-answer-btn';
-            showBtn.innerHTML = 'Show Answer <span class="eye-icon">👁️</span>';
-            showBtn.onclick = function() {
-                div.querySelector('.answer').style.display = 'inline';
-                showBtn.style.display = 'none';
-            };
-            div.appendChild(showBtn);
-
+            html += ` = <span class="answer">${exercise.answer}</span>`;
+            div.innerHTML = html;
+            const btn = document.createElement('button');
+            btn.className = 'show-answer-btn';
+            btn.innerHTML = 'Show Answer <span class="eye-icon">👁️</span>';
+            btn.onclick = function() { div.querySelector('.answer').style.display = 'inline'; btn.style.display = 'none'; };
+            div.appendChild(btn);
             return div;
         }
 
-        // Create a multiplication exercise HTML element
         function createMultiplicationExerciseElement(exercise, index) {
-            const div = document.createElement('div');
-            div.className = 'exercise';
-
-            const num1 = exercise.factors[0];
-            const num2 = exercise.factors[1];
-
-            div.innerHTML = `
-                <strong>${index}.</strong> ${num1} × ${num2} = 
-                <span class="answer">${exercise.answer}</span>
-            `;
-
-            // Add show answer button
-            const showBtn = document.createElement('button');
-            showBtn.className = 'show-answer-btn';
-            showBtn.innerHTML = 'Show Answer <span class="eye-icon">👁️</span>';
-            showBtn.onclick = function() {
-                div.querySelector('.answer').style.display = 'inline';
-                showBtn.style.display = 'none';
-            };
-            div.appendChild(showBtn);
-
+            const div = document.createElement('div'); div.className = 'exercise';
+            div.innerHTML = `<strong>${index}.</strong> ${exercise.factors[0]} × ${exercise.factors[1]} = <span class="answer">${exercise.answer}</span>`;
+            const btn = document.createElement('button');
+            btn.className = 'show-answer-btn';
+            btn.innerHTML = 'Show Answer <span class="eye-icon">👁️</span>';
+            btn.onclick = function() { div.querySelector('.answer').style.display = 'inline'; btn.style.display = 'none'; };
+            div.appendChild(btn);
             return div;
         }
 
-        // Create a division exercise HTML element
         function createDivisionExerciseElement(exercise, index) {
-            const div = document.createElement('div');
-            div.className = 'exercise';
-
-            div.innerHTML = `
-                <strong>${index}.</strong> ${exercise.dividend} ÷ ${exercise.divisor} = 
-                <span class="answer">${exercise.answer}</span>
-            `;
-
-            // Add show answer button
-            const showBtn = document.createElement('button');
-            showBtn.className = 'show-answer-btn';
-            showBtn.innerHTML = 'Show Answer <span class="eye-icon">👁️</span>';
-            showBtn.onclick = function() {
-                div.querySelector('.answer').style.display = 'inline';
-                showBtn.style.display = 'none';
-            };
-            div.appendChild(showBtn);
-
+            const div = document.createElement('div'); div.className = 'exercise';
+            div.innerHTML = `<strong>${index}.</strong> ${exercise.dividend} ÷ ${exercise.divisor} = <span class="answer">${exercise.answer}</span>`;
+            const btn = document.createElement('button'); btn.className = 'show-answer-btn';
+            btn.innerHTML = 'Show Answer <span class="eye-icon">👁️</span>';
+            btn.onclick = function() { div.querySelector('.answer').style.display = 'inline'; btn.style.display = 'none'; };
+            div.appendChild(btn);
             return div;
         }
 
         // ===== SOROBAN (Abacus) FUNCTIONS =====
 
-        // Build columns for the soroban (n digits)
         function buildAbacusColumns(n) {
             const rail = document.getElementById('abacus-rail');
             if (!rail) return;
 
-            // Preserve cover if it exists (so it can be appended later)
-            let cover = document.getElementById('abacus-cover');
-            if (cover) cover.remove(); // remove temporarily; we'll re-append at end
+            // temporarily remove cover to re-append later
+            const existingCover = document.getElementById('abacus-cover');
+            if (existingCover) existingCover.remove();
 
             rail.innerHTML = '';
 
@@ -785,7 +637,27 @@
                 col.className = 'abacus-column';
                 col.dataset.index = i;
 
-                // BOTTOM: four beads (units section)
+                // TOP: single bead (heaven bead)
+                const topSpace = document.createElement('div');
+                topSpace.className = 'top-space';
+                const topBead = document.createElement('div');
+                topBead.className = 'abacus-bead top-bead';
+                topBead.setAttribute('aria-hidden', 'true');
+                topSpace.appendChild(topBead);
+
+                // BEAM / SEPARATOR
+                const beam = document.createElement('div');
+                beam.className = 'abacus-beam';
+
+                // Add grouping dot for units/thousands/... counting from right
+                const indexFromRight = (n - 1 - i);
+                if (indexFromRight % 3 === 0) {
+                    const dot = document.createElement('div');
+                    dot.className = 'abacus-group-dot';
+                    beam.appendChild(dot);
+                }
+
+                // BOTTOM: four beads (earth beads)
                 const bottom = document.createElement('div');
                 bottom.className = 'bottom-beads';
                 for (let j = 0; j < 4; j++) {
@@ -795,37 +667,15 @@
                     bottom.appendChild(b);
                 }
 
-                // BEAM / SEPARATOR
-                const beam = document.createElement('div');
-                beam.className = 'abacus-beam';
-
-                // Add grouping dot for units/thousands/millions...
-                // indexFromRight: 0 => units, 3 => thousands, etc.
-                const colsTotal = n;
-                const indexFromRight = colsTotal - 1 - i;
-                if (indexFromRight % 3 === 0) {
-                    const dot = document.createElement('div');
-                    dot.className = 'abacus-group-dot';
-                    beam.appendChild(dot);
-                }
-
-                // TOP: single bead
-                const topSpace = document.createElement('div');
-                topSpace.className = 'abacus-top-space';
-                const topBead = document.createElement('div');
-                topBead.className = 'abacus-bead top-bead';
-                topBead.setAttribute('aria-hidden', 'true');
-                topSpace.appendChild(topBead);
-
-                // order: bottom -> beam -> top
-                col.appendChild(bottom);
-                col.appendChild(beam);
+                // Order: top -> beam -> bottom (correct soroban layout)
                 col.appendChild(topSpace);
-
+                col.appendChild(beam);
+                col.appendChild(bottom);
                 rail.appendChild(col);
             }
 
-            // Re-append cover so it overlays the rail if present
+            // re-append (or create) cover so it overlays the rail when needed
+            let cover = document.getElementById('abacus-cover');
             if (!cover) {
                 cover = document.createElement('div');
                 cover.id = 'abacus-cover';
@@ -840,25 +690,17 @@
             const topBead = columnElement.querySelector('.top-bead');
             const bottomBeads = Array.from(columnElement.querySelectorAll('.bottom-bead'));
 
-            // Top bead active if digit >= 5
-            if (digit >= 5) {
-                topBead.classList.add('active');
-            } else {
-                topBead.classList.remove('active');
-            }
+            // Top bead active when digit >= 5
+            if (digit >= 5) topBead.classList.add('active'); else topBead.classList.remove('active');
 
-            // Bottom beads active count = digit % 5
+            // Earth beads: the beads closest to the beam are activated first.
+            // bottomBeads are ordered top-to-bottom; activate first bottomActive beads.
             const bottomActive = digit % 5;
             bottomBeads.forEach((b, idx) => {
-                if (idx < bottomActive) {
-                    b.classList.add('active');
-                } else {
-                    b.classList.remove('active');
-                }
+                if (idx < bottomActive) b.classList.add('active'); else b.classList.remove('active');
             });
         }
 
-        // Render a whole abacus for a numeric string (like "123")
         function renderAbacusForNumber(numStr) {
             const rail = document.getElementById('abacus-rail');
             const cols = Array.from(rail.querySelectorAll('.abacus-column'));
@@ -869,195 +711,121 @@
             }
         }
 
-        // Generate a random number with exact number of digits
         function generateRandomNumberWithDigits(digits) {
-            if (digits <= 1) {
-                return String(getRandomInt(0, 9));
-            }
-            const min = Math.pow(10, digits - 1);
-            const max = Math.pow(10, digits) - 1;
+            if (digits <= 1) return String(getRandomInt(0, 9));
+            const min = Math.pow(10, digits - 1), max = Math.pow(10, digits) - 1;
             return String(getRandomInt(min, max));
         }
 
-        // abacus timers & helpers
+        // timers and helpers
         let abacusCoverTimer = null;
-        function clearAbacusCoverTimer() {
-            if (abacusCoverTimer) {
-                clearTimeout(abacusCoverTimer);
-                abacusCoverTimer = null;
-            }
-        }
-        function showAbacusCover() {
-            const cover = document.getElementById('abacus-cover');
-            if (cover) cover.classList.add('show');
-        }
-        function hideAbacusCover() {
-            const cover = document.getElementById('abacus-cover');
-            if (cover) cover.classList.remove('show');
-        }
+        function clearAbacusCoverTimer() { if (abacusCoverTimer) { clearTimeout(abacusCoverTimer); abacusCoverTimer = null; } }
+        function showAbacusCover() { const c = document.getElementById('abacus-cover'); if (c) c.classList.add('show'); }
+        function hideAbacusCover() { const c = document.getElementById('abacus-cover'); if (c) c.classList.remove('show'); }
 
-        // Main handler for Generate Abacus Flashcard
         document.getElementById('generate-abacus-btn').addEventListener('click', function() {
             const digits = Math.max(1, Math.min(6, parseInt(document.getElementById('abacus-digits').value || 3, 10)));
             const duration = Math.max(1, Math.min(10, parseInt(document.getElementById('abacus-duration').value || 3, 10)));
 
-            // Build columns
             buildAbacusColumns(digits);
 
-            // Generate number
             const numberStr = generateRandomNumberWithDigits(digits);
 
-            // Render abacus
             renderAbacusForNumber(numberStr);
 
-            // Show number in the number display but keep it hidden
+            // store/display answer (hidden by default)
             const numberDisplay = document.getElementById('abacus-number-display');
             numberDisplay.textContent = numberStr;
             numberDisplay.style.visibility = 'hidden';
             numberDisplay.setAttribute('aria-hidden', 'true');
 
-            // Ensure show answer button visible
             const showBtn = document.getElementById('show-abacus-answer');
             showBtn.style.display = 'inline-block';
 
-            // enable peek
-            const peekBtn = document.getElementById('peek-abacus-btn');
-            peekBtn.disabled = false;
+            document.getElementById('peek-abacus-btn').disabled = false;
 
-            // Ensure cover hidden while showing beads
+            // show beads initially then cover after duration
             hideAbacusCover();
-
-            // Clear previous timer
             clearAbacusCoverTimer();
-
-            // After duration seconds, cover the abacus (so beads are hidden)
-            abacusCoverTimer = setTimeout(() => {
-                showAbacusCover();
-                abacusCoverTimer = null;
-            }, duration * 1000);
+            abacusCoverTimer = setTimeout(() => { showAbacusCover(); abacusCoverTimer = null; }, duration * 1000);
         });
 
-        // Show numeric answer handler (moved outside cover)
+        // Show numeric answer (button is outside cover)
         document.getElementById('show-abacus-answer').addEventListener('click', function() {
             const numberDisplay = document.getElementById('abacus-number-display');
-            // Reveal numeric answer
             numberDisplay.style.visibility = 'visible';
             numberDisplay.setAttribute('aria-hidden', 'false');
-            // Ensure beads are visible as well
+
+            // ensure beads visible
             clearAbacusCoverTimer();
             hideAbacusCover();
-            // Hide the show button after revealing
+
             this.style.display = 'none';
         });
 
-        // Peek Again handler: temporarily reveal beads for configured duration but do NOT reveal number
+        // Peek Again - temporarily show beads (does not reveal numeric answer)
         document.getElementById('peek-abacus-btn').addEventListener('click', function() {
-            const peekBtn = this;
-            const raw = document.getElementById('abacus-duration').value || '3';
-            const seconds = Math.max(1, Math.min(10, parseInt(raw, 10)));
-
-            // Clear any existing scheduled cover so peek starts immediately
+            const btn = this;
+            const raw = parseInt(document.getElementById('abacus-duration').value || 3, 10);
+            const seconds = Math.max(1, Math.min(10, raw));
             clearAbacusCoverTimer();
-
-            // Show beads
             hideAbacusCover();
-
-            // Temporarily disable peek button
-            peekBtn.disabled = true;
-
-            // Schedule re-cover
-            abacusCoverTimer = setTimeout(() => {
-                showAbacusCover();
-                abacusCoverTimer = null;
-                peekBtn.disabled = false;
-            }, seconds * 1000);
+            btn.disabled = true;
+            abacusCoverTimer = setTimeout(() => { showAbacusCover(); abacusCoverTimer = null; btn.disabled = false; }, seconds * 1000);
         });
 
-        // ===== EVENT LISTENERS FOR OTHER SECTIONS =====
-
-        // Addition generation
+        // Arithmetic event listeners
         document.getElementById('generate-add-btn').addEventListener('click', function() {
             const count = parseInt(document.getElementById('add-count').value || 3, 10);
             const type = document.getElementById('add-type').value;
             const numAddends = parseInt(document.getElementById('add-addends').value || 4, 10);
-
-            const exercisesContainer = document.getElementById('add-exercises');
-            exercisesContainer.innerHTML = '';
-
+            const container = document.getElementById('add-exercises');
+            container.innerHTML = '';
             for (let i = 1; i <= count; i++) {
-                const exercise = generateAdditionExercise(type, numAddends);
-                const element = createAdditionExerciseElement(exercise, i);
-                exercisesContainer.appendChild(element);
+                const ex = generateAdditionExercise(type, numAddends);
+                container.appendChild(createAdditionExerciseElement(ex, i));
             }
         });
 
-        // Multiplication generation
         document.getElementById('generate-mult-btn').addEventListener('click', function() {
             const count = parseInt(document.getElementById('mult-count').value || 3, 10);
             const type = document.getElementById('mult-type').value;
-
-            const exercisesContainer = document.getElementById('mult-exercises');
-            exercisesContainer.innerHTML = '';
-
+            const container = document.getElementById('mult-exercises');
+            container.innerHTML = '';
             for (let i = 1; i <= count; i++) {
-                const exercise = generateMultiplicationExercise(type);
-                const element = createMultiplicationExerciseElement(exercise, i);
-                exercisesContainer.appendChild(element);
+                container.appendChild(createMultiplicationExerciseElement(generateMultiplicationExercise(type), i));
             }
         });
 
-        // Division generation
         document.getElementById('generate-div-btn').addEventListener('click', function() {
             const count = parseInt(document.getElementById('div-count').value || 3, 10);
             const type = document.getElementById('div-type').value;
-
-            const exercisesContainer = document.getElementById('div-exercises');
-            exercisesContainer.innerHTML = '';
-
+            const container = document.getElementById('div-exercises');
+            container.innerHTML = '';
             for (let i = 1; i <= count; i++) {
-                const exercise = generateDivisionExercise(type);
-                const element = createDivisionExerciseElement(exercise, i);
-                exercisesContainer.appendChild(element);
+                container.appendChild(createDivisionExerciseElement(generateDivisionExercise(type), i));
             }
         });
 
-        // Show all answers buttons
-        document.getElementById('show-all-add').addEventListener('click', function() {
-            showAllAnswers('add-exercises');
-        });
-
-        document.getElementById('show-all-mult').addEventListener('click', function() {
-            showAllAnswers('mult-exercises');
-        });
-
-        document.getElementById('show-all-div').addEventListener('click', function() {
-            showAllAnswers('div-exercises');
-        });
+        document.getElementById('show-all-add').addEventListener('click', function() { showAllAnswers('add-exercises'); });
+        document.getElementById('show-all-mult').addEventListener('click', function() { showAllAnswers('mult-exercises'); });
+        document.getElementById('show-all-div').addEventListener('click', function() { showAllAnswers('div-exercises'); });
 
         function showAllAnswers(containerId) {
             const container = document.getElementById(containerId);
-            const answers = container.querySelectorAll('.answer');
-            const buttons = container.querySelectorAll('.show-answer-btn');
-
-            answers.forEach(answer => {
-                answer.style.display = 'inline';
-            });
-
-            buttons.forEach(button => {
-                button.style.display = 'none';
-            });
+            if (!container) return;
+            container.querySelectorAll('.answer').forEach(a => a.style.display = 'inline');
+            container.querySelectorAll('.show-answer-btn').forEach(b => b.style.display = 'none');
         }
 
-        // Initialize with some example exercises and initial abacus layout
+        // Init
         document.getElementById('generate-add-btn').click();
         document.getElementById('generate-mult-btn').click();
         document.getElementById('generate-div-btn').click();
 
-        // Build an initial abacus layout (default digits)
         (function initAbacus() {
             const defaultDigits = Math.max(1, Math.min(6, parseInt(document.getElementById('abacus-digits').value || 3, 10)));
             buildAbacusColumns(defaultDigits);
-            // initial numeric display is empty/hidden
             const numberDisplay = document.getElementById('abacus-number-display');
             numberDisplay.textContent = ''.padStart(defaultDigits, '0');
             numberDisplay.style.visibility = 'hidden';
