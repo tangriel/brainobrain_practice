@@ -12,7 +12,7 @@
         /* Basic styling for better readability */
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 20px;
             line-height: 1.6;
@@ -28,6 +28,8 @@
             margin-bottom: 20px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
+
+        /* Controls */
         .controls {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -35,52 +37,41 @@
             margin-bottom: 20px;
             align-items: start;
         }
-        .controls > div {
-            display: flex;
-            flex-direction: column;
+        .controls > div { display: flex; flex-direction: column; }
+        .generate-btn-container { grid-column: 1 / -1; margin-top: 15px; }
+        label { display:block; margin-bottom:8px; font-weight:700; font-size:0.95rem; }
+
+        /* Make drop-downs (selects) wider so full values fit.
+           They remain responsive: on small screens min-width resets. */
+        .controls select {
+            min-width: 260px;
+            max-width: 100%;
+            width: auto;
         }
-        .generate-btn-container {
-            grid-column: 1 / -1;
-            margin-top: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            font-size: 0.9em;
-        }
+
         select, input, button {
             padding: 10px 12px;
             border-radius: 4px;
             border: 1px solid #ddd;
-            width: 100%;
             box-sizing: border-box;
             font-size: 1rem;
         }
-        .input-with-label {
-            display: flex;
-            align-items: center;
-        }
-        .input-with-label input {
-            margin-right: 8px;
-            flex-grow: 1;
-        }
-        .input-with-label span {
-            white-space: nowrap;
-            font-size: 0.9em;
-        }
+
+        .input-with-label { display:flex; align-items:center; }
+        .input-with-label input { margin-right:8px; flex-grow:1; }
+        .input-with-label span { white-space:nowrap; font-size:0.9em; }
+
         button {
             background-color: #3498db;
             color: white;
             border: none;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.25s;
             width: 100%;
             font-weight: bold;
         }
-        button:hover {
-            background-color: #2980b9;
-        }
+        button:hover { background-color: #2980b9; }
+
         .exercises {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -89,43 +80,13 @@
         .exercise {
             background-color: white;
             padding: 15px;
-            border-radius: 5px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
         }
-        .answer {
-            color: #e74c3c;
-            font-weight: bold;
-            display: none;
-        }
-        .show-answer-btn {
-            background-color: #27ae60;
-            margin-top: 10px;
-            font-size: 0.9em;
-        }
-        .show-all-btn {
-            background-color: #f39c12;
-            margin-top: 15px;
-        }
-        /* Eye icon styling */
-        .eye-icon {
-            margin-left: 5px;
-            vertical-align: middle;
-        }
-        footer {
-            margin-top: 40px;
-            text-align: center;
-            color: #7f8c8d;
-            font-size: 0.9em;
-        }
-        .debug {
-            background-color: #f8f9fa;
-            border: 1px solid #ddd;
-            padding: 10px;
-            margin-top: 20px;
-            font-family: monospace;
-            white-space: pre;
-            display: none;
-        }
+        .answer { color: #e74c3c; font-weight:700; display:none; }
+        .show-answer-btn { background:#27ae60; color:#fff; margin-top:10px; }
+        .show-all-btn { background:#f39c12; color:#fff; margin-top:12px; }
+        .eye-icon { margin-left:6px; vertical-align:middle; }
 
         /* Abacus (Soroban) styling */
         .abacus-section .abacus-controls {
@@ -139,22 +100,22 @@
         .abacus {
             position: relative;
             width: 100%;
-            max-width: 740px;
+            max-width: 780px;
             margin: 10px auto 0;
             padding: 18px;
             background: linear-gradient(180deg,#e9d59a,#e4c77a);
             border-radius: 12px;
             box-shadow: inset 0 6px 12px rgba(0,0,0,0.06), 0 2px 6px rgba(0,0,0,0.12);
-            overflow: visible;
+            overflow: hidden; /* IMPORTANT: hide beads overflow so cover fully conceals them */
         }
 
-        /* Rail contains columns and cover; cover will only overlay rail area */
+        /* Rail contains the rods; keeps layout for columns */
         .abacus-rail {
             display: flex;
             justify-content: center;
             gap: 12px;
             padding: 18px 8px;
-            position: relative; /* important: confine cover */
+            position: relative;
             border-radius: 8px;
             background: linear-gradient(180deg, rgba(0,0,0,0.02), transparent);
         }
@@ -172,153 +133,113 @@
         .abacus-bead {
             width: 40px;
             height: 40px;
-            border-radius: 50%;
-            background: #6b3f2b;
+            border-radius:50%;
+            background:#6b3f2b;
             box-shadow: 0 3px 0 rgba(0,0,0,0.25);
-            transition: transform 0.22s ease;
-            position: relative;
+            transition: transform .22s ease;
             flex-shrink: 0;
         }
 
-        /* Top bead (5) - slightly different color and size */
+        /* Heaven bead (5) */
         .top-bead {
-            width: 36px;
-            height: 36px;
-            background: #8b4f34;
+            width: 36px; height:36px;
+            background:#8b4f34;
             box-shadow: 0 2px 0 rgba(0,0,0,0.2);
         }
 
         .bottom-bead {
-            width: 36px;
-            height: 36px;
-            background: #6b3f2b;
+            width:36px; height:36px; background:#6b3f2b;
         }
 
         .top-space {
-            height: 58px; /* room above the beam for top bead to rest when inactive */
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            height: 58px; display:flex; align-items:center; justify-content:center;
         }
 
         .bottom-beads {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 8px;
-            align-items: center;
+            display:flex; flex-direction:column; gap:12px; margin-top:8px; align-items:center;
         }
 
         .abacus-beam {
-            height: 8px;
-            background: #2f2f2f;
-            width: 100%;
-            margin: 6px 0;
-            border-radius: 4px;
-            position: relative;
+            height:8px;
+            width:100%;
+            margin:6px 0;
+            background:#2f2f2f;
+            border-radius:4px;
+            position:relative;
             box-shadow: 0 1px 0 rgba(255,255,255,0.08) inset;
         }
 
-        /* small white grouping dot for units/thousands/etc. placed on the beam */
         .abacus-group-dot {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%,-50%);
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #fff;
+            position:absolute;
+            top:50%;
+            left:50%;
+            transform:translate(-50%,-50%);
+            width:8px; height:8px;
+            border-radius:50%;
+            background:#fff;
             box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset;
-            opacity: 0.95;
+            opacity:0.95;
         }
 
         /*
-         * Correct Soroban bead movement:
-         * - top (heaven) bead is above the beam; inactive -> moved away (up), active -> moved down to beam
-         * - bottom (earth) beads are below the beam; inactive -> moved away (down), active -> moved up to beam
-         */
+         Soroban movement:
+         - top bead inactive: moved up (away from beam), active: moved down (to beam)
+         - bottom beads inactive: moved down (away), active: moved up (to beam)
+        */
+        .top-bead { transform: translateY(-36px); }    /* up when inactive */
+        .top-bead.active { transform: translateY(0); }  /* down to beam when active */
 
-        /* top bead: inactive moved up (away), active moved down (towards beam) */
-        .top-bead { transform: translateY(-36px); }    /* up (inactive) */
-        .top-bead.active { transform: translateY(0); } /* down to beam (active) */
+        .bottom-bead { transform: translateY(36px); }    /* down when inactive */
+        .bottom-bead.active { transform: translateY(0); } /* up to beam when active */
 
-        /* bottom beads: inactive moved down (away), active moved up (towards beam) */
-        .bottom-bead { transform: translateY(36px); }    /* down (inactive) */
-        .bottom-bead.active { transform: translateY(0); } /* up to beam (active) */
-
-        /* Cover inside rail to hide beads without covering controls */
+        /* COVER: now covers the entire .abacus area and is almost opaque */
         .abacus-cover {
             position: absolute;
             inset: 0;
-            background: rgba(255,255,255,0.96);
+            background: rgba(255,255,255,0.995); /* nearly solid white to fully hide beads */
             display: none;
             align-items: center;
             justify-content: center;
             font-size: 1.05em;
             color: #333;
-            border-radius: 8px;
-            z-index: 8;
+            border-radius: 12px;
+            z-index: 40;
             padding: 10px;
             text-align: center;
+            pointer-events: auto;
         }
-        .abacus-cover.show { display: flex; }
+        .abacus-cover.show { display:flex; }
 
-        /* Footer with buttons and numeric answer - placed outside rail so cover won't hide it */
-        .abacus-footer {
+        /* Buttons & answer moved OUTSIDE the abacus field so cover won't overlap them */
+        .abacus-controls-row {
             margin-top: 12px;
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
+            display:flex;
+            gap:12px;
+            align-items:center;
+            justify-content:space-between;
+            flex-wrap:wrap;
         }
-        .abacus-footer .controls-left { display: flex; gap: 8px; align-items: center; }
+        .abacus-controls-row .left { display:flex; gap:8px; align-items:center; }
+        .abacus-controls-row button { width:auto !important; min-width:110px; padding:8px 12px; font-weight:700; }
 
-        /* Prevent full-width buttons inside footer; override generic button width:100% */
-        .abacus-footer button {
-            width: auto !important;
-            min-width: 110px;
-            padding: 8px 12px;
-            font-size: 0.95em;
-            font-weight: bold;
-        }
-        .peek-btn {
-            background-color: #8e44ad;
-            border: none;
-            color: #fff;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .peek-btn:hover { background-color: #712e93; }
-        .peek-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .peek-btn { background:#8e44ad; color:#fff; border:0; border-radius:4px; }
+        .peek-btn:hover { background:#712e93; }
+        .peek-btn:disabled { opacity:0.6; cursor:not-allowed; }
 
-        .abacus-number-display {
-            font-size: 1.25em;
-            font-weight: 800;
-            color: #c0392b;
-            min-width: 110px;
-            text-align: right;
-        }
+        .abacus-number-display { font-size:1.25rem; font-weight:800; color:#c0392b; min-width:110px; text-align:right; }
 
         /* Responsive adjustments */
-        @media (max-width: 800px) {
-            .controls {
-                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-                gap: 15px;
-            }
-            .abacus-column { width: 46px; height: 190px; }
-            .abacus-bead, .top-bead, .bottom-bead { width: 32px; height: 32px; }
-            .top-space { height: 48px; }
+        @media (max-width: 760px) {
+            .controls select { min-width: 180px; }
+            .abacus-column { width:46px; height:190px; }
+            .abacus-bead, .top-bead, .bottom-bead { width:32px; height:32px; }
+            .top-space { height:48px; }
+            .abacus-number-display { text-align:center; min-width:0; }
         }
-        @media (max-width: 500px) {
-            .controls { grid-template-columns: 1fr 1fr; gap: 12px; }
-            .abacus-rail { gap: 8px; padding: 12px 6px; }
-        }
-        @media (max-width: 400px) {
-            .controls { grid-template-columns: 1fr; gap: 10px; }
-            .exercises { grid-template-columns: 1fr; }
-            .abacus-column { width: 40px; height: 160px; }
+        @media (max-width: 420px) {
+            .controls select { min-width: 0; }
+            .controls { grid-template-columns: 1fr 1fr; gap:10px; }
+            .abacus-rail { gap:8px; padding:12px 6px; }
         }
     </style>
 </head>
@@ -373,7 +294,6 @@
                     <option value="dd_dd">Double-Digit × Double-Digit</option>
                 </select>
             </div>
-            <!-- Added empty div for consistent spacing -->
             <div></div>
             <div class="generate-btn-container">
                 <button id="generate-mult-btn">Generate Multiplication Exercises</button>
@@ -400,7 +320,6 @@
                     <option value="fd_dd">Four-Digit ÷ Double-Digit</option>
                 </select>
             </div>
-            <!-- Added empty div for consistent spacing -->
             <div></div>
             <div class="generate-btn-container">
                 <button id="generate-div-btn">Generate Division Exercises</button>
@@ -413,6 +332,7 @@
     <!-- Flashcards (Soroban) Section -->
     <div class="section abacus-section" id="abacus-section">
         <h2>Flashcards — Soroban (Japanese abacus)</h2>
+
         <div class="abacus-controls">
             <div>
                 <label for="abacus-digits">Digits (1–6):</label>
@@ -430,20 +350,23 @@
             </div>
         </div>
 
+        <!-- Abacus field (cover now inside .abacus and covers whole field) -->
         <div class="abacus" id="abacus-display" aria-live="polite">
             <div class="abacus-rail" id="abacus-rail">
                 <!-- columns generated dynamically -->
-                <div class="abacus-cover" id="abacus-cover">Memorize the beads... (hidden)</div>
             </div>
 
-            <!-- moved outside the rail so the cover won't hide buttons/answer -->
-            <div class="abacus-footer">
-                <div class="controls-left">
-                    <button id="show-abacus-answer" class="show-answer-btn">Show Answer <span class="eye-icon">👁️</span></button>
-                    <button id="peek-abacus-btn" class="peek-btn">Peek Again</button>
-                </div>
-                <div class="abacus-number-display" id="abacus-number-display" aria-hidden="true"></div>
+            <!-- cover placed inside .abacus so it covers the entire abacus field -->
+            <div class="abacus-cover" id="abacus-cover">Memorize the beads... (hidden)</div>
+        </div>
+
+        <!-- Controls moved OUTSIDE the abacus field (so cover won't hide them) -->
+        <div class="abacus-controls-row">
+            <div class="left">
+                <button id="show-abacus-answer" class="show-answer-btn">Show Answer <span class="eye-icon">👁️</span></button>
+                <button id="peek-abacus-btn" class="peek-btn">Peek Again</button>
             </div>
+            <div class="abacus-number-display" id="abacus-number-display" aria-hidden="true"></div>
         </div>
     </div>
 
@@ -452,38 +375,17 @@
     </footer>
 
     <script>
-        // ===== UTILITY FUNCTIONS =====
-
+        // ===== Utility functions =====
         function getRandomInt(min, max) {
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
+        function getRandomSingleDigit() { return getRandomInt(2, 9); }
+        function getRandomDoubleDigit() { return getRandomInt(11, 99); }
+        function getRandomTripleDigit() { return getRandomInt(100, 999); }
+        function getRandomFourDigit() { return getRandomInt(1000, 9999); }
+        function shuffleArray(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]];} return arr; }
 
-        function getRandomSingleDigit() {
-            return getRandomInt(2, 9);
-        }
-
-        function getRandomDoubleDigit() {
-            return getRandomInt(11, 99);
-        }
-
-        function getRandomTripleDigit() {
-            return getRandomInt(100, 999);
-        }
-
-        function getRandomFourDigit() {
-            return getRandomInt(1000, 9999);
-        }
-
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
-
-        // ===== ADDITION / MULTIPLICATION / DIVISION (kept original logic) =====
-
+        // ===== Arithmetic functions (kept original logic) =====
         function generateAdditionExercise(type, numAddends) {
             let addends = [];
             let runningSum = 0;
@@ -497,147 +399,122 @@
             } else {
                 const doubleDigitCount = Math.max(0, Math.min(
                     numAddends,
-                    getRandomInt(Math.floor(numAddends / 2) - 1, Math.floor(numAddends / 2) + 1)
+                    getRandomInt(Math.max(0,Math.floor(numAddends/2)-1), Math.floor(numAddends/2)+1)
                 ));
-                let addendsTypes = [];
-                for (let i = 0; i < numAddends; i++) addendsTypes.push(i < doubleDigitCount ? "dd" : "sd");
-                addendsTypes = shuffleArray(addendsTypes);
-                for (let i = 0; i < numAddends; i++) {
-                    addends.push(addendsTypes[i] === "dd" ? getRandomDoubleDigit() : getRandomSingleDigit());
-                }
+                let types = [];
+                for (let i = 0; i < numAddends; i++) types.push(i < doubleDigitCount ? "dd" : "sd");
+                types = shuffleArray(types);
+                for (let i = 0; i < numAddends; i++) addends.push(types[i] === "dd" ? getRandomDoubleDigit() : getRandomSingleDigit());
             }
 
-            addends.sort((a, b) => Math.abs(b) - Math.abs(a));
+            addends.sort((a,b)=>Math.abs(b)-Math.abs(a));
             const finalAddends = [];
-
             for (const num of addends) {
                 let finalNum = num;
                 if (numNegatives < maxNegatives && Math.random() < 0.3) {
-                    if (runningSum > num) {
-                        finalNum = -num;
-                        numNegatives++;
-                    }
+                    if (runningSum > num) { finalNum = -num; numNegatives++; }
                 }
                 finalAddends.push(finalNum);
                 runningSum += finalNum;
             }
 
-            let bestFinalAddends = [...finalAddends];
+            let best = [...finalAddends];
             let attempts = 0;
             while (attempts < 10) {
                 attempts++;
                 const test = [...finalAddends];
                 shuffleArray(test);
-                let sum = 0;
-                let ok = true;
-                for (const n of test) {
-                    sum += n;
-                    if (sum < 0) { ok = false; break; }
-                }
-                if (ok) { bestFinalAddends = test; break; }
+                let sum = 0, ok = true;
+                for (const n of test) { sum += n; if (sum < 0) { ok = false; break; } }
+                if (ok) { best = test; break; }
             }
 
-            return { addends: bestFinalAddends, answer: bestFinalAddends.reduce((s, n) => s + n, 0) };
+            return { addends: best, answer: best.reduce((s,n)=>s+n,0) };
         }
 
         function generateMultiplicationExercise(type) {
-            let num1, num2;
-            switch (type) {
-                case "sd_sd": num1 = getRandomSingleDigit(); num2 = getRandomSingleDigit(); break;
-                case "dd_sd": num1 = getRandomDoubleDigit(); num2 = getRandomSingleDigit(); break;
-                case "td_sd": num1 = getRandomTripleDigit(); num2 = getRandomSingleDigit(); break;
-                case "dd_dd": num1 = getRandomDoubleDigit(); do { num2 = getRandomDoubleDigit(); } while (num2 === 10); break;
-                default: num1 = getRandomSingleDigit(); num2 = getRandomSingleDigit();
+            let a,b;
+            switch(type){
+                case "sd_sd": a=getRandomSingleDigit(); b=getRandomSingleDigit(); break;
+                case "dd_sd": a=getRandomDoubleDigit(); b=getRandomSingleDigit(); break;
+                case "td_sd": a=getRandomTripleDigit(); b=getRandomSingleDigit(); break;
+                case "dd_dd": a=getRandomDoubleDigit(); do{ b=getRandomDoubleDigit(); } while(b===10); break;
+                default: a=getRandomSingleDigit(); b=getRandomSingleDigit();
             }
-            return { factors: [num1, num2], answer: num1 * num2 };
+            return { factors:[a,b], answer: a*b };
         }
 
         function generateDivisionExercise(type) {
             let dividend, divisor;
-            switch (type) {
+            switch(type){
                 case "dd_sd":
                     divisor = getRandomSingleDigit();
-                    { const min1 = Math.ceil(10 / divisor), max1 = Math.floor(99 / divisor); const factor1 = getRandomInt(min1, max1); dividend = divisor * factor1; }
+                    { const min=Math.ceil(10/divisor), max=Math.floor(99/divisor); dividend = divisor * getRandomInt(min, max); }
                     break;
                 case "td_sd":
                     divisor = getRandomSingleDigit();
-                    { const min2 = Math.ceil(100 / divisor), max2 = Math.floor(999 / divisor); const factor2 = getRandomInt(min2, max2); dividend = divisor * factor2; }
+                    { const min=Math.ceil(100/divisor), max=Math.floor(999/divisor); dividend = divisor * getRandomInt(min, max); }
                     break;
                 case "fd_sd":
                     divisor = getRandomSingleDigit();
-                    { const min3 = Math.ceil(1000 / divisor), max3 = Math.floor(9999 / divisor); const factor3 = getRandomInt(min3, max3); dividend = divisor * factor3; }
+                    { const min=Math.ceil(1000/divisor), max=Math.floor(9999/divisor); dividend = divisor * getRandomInt(min, max); }
                     break;
                 case "fd_dd":
-                    do { divisor = getRandomInt(11, 50); } while (divisor === 10);
-                    { const min4 = Math.ceil(1000 / divisor), max4 = Math.floor(9999 / divisor); const factor4 = getRandomInt(min4, max4); dividend = divisor * factor4; }
+                    do { divisor = getRandomInt(11,50); } while(divisor === 10);
+                    { const min=Math.ceil(1000/divisor), max=Math.floor(9999/divisor); dividend = divisor * getRandomInt(min, max); }
                     break;
                 default:
                     divisor = getRandomSingleDigit();
-                    dividend = divisor * getRandomInt(10, 99);
+                    dividend = divisor * getRandomInt(10,99);
             }
-            const result = dividend / divisor;
-            return { dividend, divisor, answer: result };
+            return { dividend, divisor, answer: dividend / divisor };
         }
 
-        // UI elements for arithmetic
         function createAdditionExerciseElement(exercise, index) {
-            const div = document.createElement('div');
-            div.className = 'exercise';
+            const div = document.createElement('div'); div.className = 'exercise';
             let html = `<strong>${index}.</strong> `;
-            for (let i = 0; i < exercise.addends.length; i++) {
-                const num = exercise.addends[i];
-                if (i === 0) html += num;
-                else html += num < 0 ? ` - ${Math.abs(num)}` : ` + ${num}`;
+            for (let i=0;i<exercise.addends.length;i++){
+                const n = exercise.addends[i];
+                if (i===0) html += n;
+                else html += n < 0 ? ` - ${Math.abs(n)}` : ` + ${n}`;
             }
             html += ` = <span class="answer">${exercise.answer}</span>`;
             div.innerHTML = html;
-            const btn = document.createElement('button');
-            btn.className = 'show-answer-btn';
-            btn.innerHTML = 'Show Answer <span class="eye-icon">👁️</span>';
-            btn.onclick = function() { div.querySelector('.answer').style.display = 'inline'; btn.style.display = 'none'; };
+            const btn = document.createElement('button'); btn.className='show-answer-btn'; btn.innerHTML='Show Answer <span class="eye-icon">👁️</span>';
+            btn.onclick = ()=>{ div.querySelector('.answer').style.display='inline'; btn.style.display='none'; };
             div.appendChild(btn);
             return div;
         }
 
-        function createMultiplicationExerciseElement(exercise, index) {
-            const div = document.createElement('div'); div.className = 'exercise';
+        function createMultiplicationExerciseElement(exercise, index){
+            const div = document.createElement('div'); div.className='exercise';
             div.innerHTML = `<strong>${index}.</strong> ${exercise.factors[0]} × ${exercise.factors[1]} = <span class="answer">${exercise.answer}</span>`;
-            const btn = document.createElement('button');
-            btn.className = 'show-answer-btn';
-            btn.innerHTML = 'Show Answer <span class="eye-icon">👁️</span>';
-            btn.onclick = function() { div.querySelector('.answer').style.display = 'inline'; btn.style.display = 'none'; };
-            div.appendChild(btn);
-            return div;
+            const btn = document.createElement('button'); btn.className='show-answer-btn'; btn.innerHTML='Show Answer <span class="eye-icon">👁️</span>';
+            btn.onclick = ()=>{ div.querySelector('.answer').style.display='inline'; btn.style.display='none'; };
+            div.appendChild(btn); return div;
         }
 
-        function createDivisionExerciseElement(exercise, index) {
-            const div = document.createElement('div'); div.className = 'exercise';
+        function createDivisionExerciseElement(exercise, index){
+            const div = document.createElement('div'); div.className='exercise';
             div.innerHTML = `<strong>${index}.</strong> ${exercise.dividend} ÷ ${exercise.divisor} = <span class="answer">${exercise.answer}</span>`;
-            const btn = document.createElement('button'); btn.className = 'show-answer-btn';
-            btn.innerHTML = 'Show Answer <span class="eye-icon">👁️</span>';
-            btn.onclick = function() { div.querySelector('.answer').style.display = 'inline'; btn.style.display = 'none'; };
-            div.appendChild(btn);
-            return div;
+            const btn = document.createElement('button'); btn.className='show-answer-btn'; btn.innerHTML='Show Answer <span class="eye-icon">👁️</span>';
+            btn.onclick = ()=>{ div.querySelector('.answer').style.display='inline'; btn.style.display='none'; };
+            div.appendChild(btn); return div;
         }
 
-        // ===== SOROBAN (Abacus) FUNCTIONS =====
+        // ===== Soroban (abacus) functions =====
 
+        // Build columns for soroban: top bead, beam (with grouping dot), bottom 4 beads
         function buildAbacusColumns(n) {
             const rail = document.getElementById('abacus-rail');
             if (!rail) return;
-
-            // temporarily remove cover to re-append later
-            const existingCover = document.getElementById('abacus-cover');
-            if (existingCover) existingCover.remove();
-
-            rail.innerHTML = '';
-
+            rail.innerHTML = ''; // clear only the rail (cover is separate inside .abacus)
             for (let i = 0; i < n; i++) {
                 const col = document.createElement('div');
                 col.className = 'abacus-column';
                 col.dataset.index = i;
 
-                // TOP: single bead (heaven bead)
+                // TOP (heaven bead)
                 const topSpace = document.createElement('div');
                 topSpace.className = 'top-space';
                 const topBead = document.createElement('div');
@@ -645,19 +522,15 @@
                 topBead.setAttribute('aria-hidden', 'true');
                 topSpace.appendChild(topBead);
 
-                // BEAM / SEPARATOR
+                // BEAM
                 const beam = document.createElement('div');
                 beam.className = 'abacus-beam';
-
-                // Add grouping dot for units/thousands/... counting from right
                 const indexFromRight = (n - 1 - i);
                 if (indexFromRight % 3 === 0) {
-                    const dot = document.createElement('div');
-                    dot.className = 'abacus-group-dot';
-                    beam.appendChild(dot);
+                    const dot = document.createElement('div'); dot.className = 'abacus-group-dot'; beam.appendChild(dot);
                 }
 
-                // BOTTOM: four beads (earth beads)
+                // BOTTOM (four earth beads)
                 const bottom = document.createElement('div');
                 bottom.className = 'bottom-beads';
                 for (let j = 0; j < 4; j++) {
@@ -667,34 +540,23 @@
                     bottom.appendChild(b);
                 }
 
-                // Order: top -> beam -> bottom (correct soroban layout)
+                // order: top -> beam -> bottom
                 col.appendChild(topSpace);
                 col.appendChild(beam);
                 col.appendChild(bottom);
                 rail.appendChild(col);
             }
-
-            // re-append (or create) cover so it overlays the rail when needed
-            let cover = document.getElementById('abacus-cover');
-            if (!cover) {
-                cover = document.createElement('div');
-                cover.id = 'abacus-cover';
-                cover.className = 'abacus-cover';
-                cover.textContent = 'Memorize the beads... (hidden)';
-            }
-            rail.appendChild(cover);
         }
 
-        // Set a column to represent a single digit (0-9) in soroban terms
         function setAbacusColumn(columnElement, digit) {
             const topBead = columnElement.querySelector('.top-bead');
             const bottomBeads = Array.from(columnElement.querySelectorAll('.bottom-bead'));
 
-            // Top bead active when digit >= 5
+            if (!topBead) return;
+            // top/bead: active if digit >= 5
             if (digit >= 5) topBead.classList.add('active'); else topBead.classList.remove('active');
 
-            // Earth beads: the beads closest to the beam are activated first.
-            // bottomBeads are ordered top-to-bottom; activate first bottomActive beads.
+            // bottom beads: activate closest-to-beam beads first -> in DOM order top-to-bottom
             const bottomActive = digit % 5;
             bottomBeads.forEach((b, idx) => {
                 if (idx < bottomActive) b.classList.add('active'); else b.classList.remove('active');
@@ -717,118 +579,104 @@
             return String(getRandomInt(min, max));
         }
 
-        // timers and helpers
+        // cover & timers
         let abacusCoverTimer = null;
-        function clearAbacusCoverTimer() { if (abacusCoverTimer) { clearTimeout(abacusCoverTimer); abacusCoverTimer = null; } }
-        function showAbacusCover() { const c = document.getElementById('abacus-cover'); if (c) c.classList.add('show'); }
-        function hideAbacusCover() { const c = document.getElementById('abacus-cover'); if (c) c.classList.remove('show'); }
+        function clearAbacusCoverTimer(){ if (abacusCoverTimer){ clearTimeout(abacusCoverTimer); abacusCoverTimer = null; } }
+        function showAbacusCover(){ const c = document.getElementById('abacus-cover'); if (c) c.classList.add('show'); }
+        function hideAbacusCover(){ const c = document.getElementById('abacus-cover'); if (c) c.classList.remove('show'); }
 
-        document.getElementById('generate-abacus-btn').addEventListener('click', function() {
+        // Generate abacus flashcard
+        document.getElementById('generate-abacus-btn').addEventListener('click', function(){
             const digits = Math.max(1, Math.min(6, parseInt(document.getElementById('abacus-digits').value || 3, 10)));
             const duration = Math.max(1, Math.min(10, parseInt(document.getElementById('abacus-duration').value || 3, 10)));
-
             buildAbacusColumns(digits);
-
             const numberStr = generateRandomNumberWithDigits(digits);
-
             renderAbacusForNumber(numberStr);
 
-            // store/display answer (hidden by default)
             const numberDisplay = document.getElementById('abacus-number-display');
             numberDisplay.textContent = numberStr;
             numberDisplay.style.visibility = 'hidden';
-            numberDisplay.setAttribute('aria-hidden', 'true');
+            numberDisplay.setAttribute('aria-hidden','true');
 
             const showBtn = document.getElementById('show-abacus-answer');
             showBtn.style.display = 'inline-block';
-
             document.getElementById('peek-abacus-btn').disabled = false;
 
-            // show beads initially then cover after duration
+            // show beads initially
             hideAbacusCover();
             clearAbacusCoverTimer();
-            abacusCoverTimer = setTimeout(() => { showAbacusCover(); abacusCoverTimer = null; }, duration * 1000);
+            abacusCoverTimer = setTimeout(()=>{ showAbacusCover(); abacusCoverTimer = null; }, duration * 1000);
         });
 
-        // Show numeric answer (button is outside cover)
-        document.getElementById('show-abacus-answer').addEventListener('click', function() {
+        // Show numeric answer (button is outside abacus field)
+        document.getElementById('show-abacus-answer').addEventListener('click', function(){
             const numberDisplay = document.getElementById('abacus-number-display');
             numberDisplay.style.visibility = 'visible';
-            numberDisplay.setAttribute('aria-hidden', 'false');
-
-            // ensure beads visible
+            numberDisplay.setAttribute('aria-hidden','false');
+            // make sure beads visible too
             clearAbacusCoverTimer();
             hideAbacusCover();
-
             this.style.display = 'none';
         });
 
-        // Peek Again - temporarily show beads (does not reveal numeric answer)
-        document.getElementById('peek-abacus-btn').addEventListener('click', function() {
+        // Peek Again: temporarily show beads (does not reveal numeric answer)
+        document.getElementById('peek-abacus-btn').addEventListener('click', function(){
             const btn = this;
             const raw = parseInt(document.getElementById('abacus-duration').value || 3, 10);
             const seconds = Math.max(1, Math.min(10, raw));
             clearAbacusCoverTimer();
             hideAbacusCover();
             btn.disabled = true;
-            abacusCoverTimer = setTimeout(() => { showAbacusCover(); abacusCoverTimer = null; btn.disabled = false; }, seconds * 1000);
+            abacusCoverTimer = setTimeout(()=>{ showAbacusCover(); abacusCoverTimer = null; btn.disabled = false; }, seconds * 1000);
         });
 
-        // Arithmetic event listeners
-        document.getElementById('generate-add-btn').addEventListener('click', function() {
+        // Arithmetic listeners
+        document.getElementById('generate-add-btn').addEventListener('click', function(){
             const count = parseInt(document.getElementById('add-count').value || 3, 10);
             const type = document.getElementById('add-type').value;
-            const numAddends = parseInt(document.getElementById('add-addends').value || 4, 10);
-            const container = document.getElementById('add-exercises');
-            container.innerHTML = '';
-            for (let i = 1; i <= count; i++) {
-                const ex = generateAdditionExercise(type, numAddends);
-                container.appendChild(createAdditionExerciseElement(ex, i));
-            }
+            const addends = parseInt(document.getElementById('add-addends').value || 4, 10);
+            const container = document.getElementById('add-exercises'); container.innerHTML='';
+            for (let i=1;i<=count;i++){ container.appendChild(createAdditionExerciseElement(generateAdditionExercise(type, addends), i)); }
         });
 
-        document.getElementById('generate-mult-btn').addEventListener('click', function() {
+        document.getElementById('generate-mult-btn').addEventListener('click', function(){
             const count = parseInt(document.getElementById('mult-count').value || 3, 10);
             const type = document.getElementById('mult-type').value;
-            const container = document.getElementById('mult-exercises');
-            container.innerHTML = '';
-            for (let i = 1; i <= count; i++) {
-                container.appendChild(createMultiplicationExerciseElement(generateMultiplicationExercise(type), i));
-            }
+            const container = document.getElementById('mult-exercises'); container.innerHTML='';
+            for (let i=1;i<=count;i++){ container.appendChild(createMultiplicationExerciseElement(generateMultiplicationExercise(type), i)); }
         });
 
-        document.getElementById('generate-div-btn').addEventListener('click', function() {
+        document.getElementById('generate-div-btn').addEventListener('click', function(){
             const count = parseInt(document.getElementById('div-count').value || 3, 10);
             const type = document.getElementById('div-type').value;
-            const container = document.getElementById('div-exercises');
-            container.innerHTML = '';
-            for (let i = 1; i <= count; i++) {
-                container.appendChild(createDivisionExerciseElement(generateDivisionExercise(type), i));
-            }
+            const container = document.getElementById('div-exercises'); container.innerHTML='';
+            for (let i=1;i<=count;i++){ container.appendChild(createDivisionExerciseElement(generateDivisionExercise(type), i)); }
         });
 
-        document.getElementById('show-all-add').addEventListener('click', function() { showAllAnswers('add-exercises'); });
-        document.getElementById('show-all-mult').addEventListener('click', function() { showAllAnswers('mult-exercises'); });
-        document.getElementById('show-all-div').addEventListener('click', function() { showAllAnswers('div-exercises'); });
+        document.getElementById('show-all-add').addEventListener('click', ()=> showAllAnswers('add-exercises'));
+        document.getElementById('show-all-mult').addEventListener('click', ()=> showAllAnswers('mult-exercises'));
+        document.getElementById('show-all-div').addEventListener('click', ()=> showAllAnswers('div-exercises'));
 
-        function showAllAnswers(containerId) {
-            const container = document.getElementById(containerId);
-            if (!container) return;
-            container.querySelectorAll('.answer').forEach(a => a.style.display = 'inline');
-            container.querySelectorAll('.show-answer-btn').forEach(b => b.style.display = 'none');
+        function showAllAnswers(containerId){
+            const c = document.getElementById(containerId);
+            if (!c) return;
+            c.querySelectorAll('.answer').forEach(a=>a.style.display='inline');
+            c.querySelectorAll('.show-answer-btn').forEach(b=>b.style.display='none');
         }
 
-        // Init
+        // Initialize
         document.getElementById('generate-add-btn').click();
         document.getElementById('generate-mult-btn').click();
         document.getElementById('generate-div-btn').click();
 
-        (function initAbacus() {
-            const defaultDigits = Math.max(1, Math.min(6, parseInt(document.getElementById('abacus-digits').value || 3, 10)));
+        (function initAbacus(){
+            const defaultDigits = Math.max(1, Math.min(6, parseInt(document.getElementById('abacus-digits').value || 3,10)));
             buildAbacusColumns(defaultDigits);
             const numberDisplay = document.getElementById('abacus-number-display');
             numberDisplay.textContent = ''.padStart(defaultDigits, '0');
             numberDisplay.style.visibility = 'hidden';
+            // start with cover hidden (user sees beads initially)
+            hideAbacusCover();
         })();
     </script>
 </body>
