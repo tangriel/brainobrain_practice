@@ -125,21 +125,152 @@
             display: none;
         }
 
+        /* Abacus styling */
+        .abacus-section .abacus-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .abacus {
+            position: relative;
+            width: 100%;
+            max-width: 640px;
+            margin: 10px auto 0;
+            padding: 20px;
+            background: #e4c17a;
+            border-radius: 12px;
+            box-shadow: inset 0 6px 12px rgba(0,0,0,0.06), 0 2px 6px rgba(0,0,0,0.12);
+            overflow: visible;
+        }
+
+        .abacus-rail {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            padding: 20px 10px;
+        }
+
+        .abacus-column {
+            width: 52px;
+            height: 180px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .abacus-bead {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #6b3f2b;
+            box-shadow: 0 2px 0 rgba(0,0,0,0.25);
+            transition: transform 0.25s ease;
+            position: relative;
+        }
+
+        .abacus-top-space {
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .abacus-beam {
+            height: 6px;
+            background: #2f2f2f;
+            width: 100%;
+            margin: 6px 0;
+            border-radius: 3px;
+            box-shadow: 0 1px 0 rgba(255,255,255,0.08) inset;
+        }
+
+        .bottom-beads {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 6px;
+            align-items: center;
+        }
+
+        /* Default positions: top bead up, bottom beads down */
+        .abacus-column .top-bead {
+            transform: translateY(0);
+        }
+        .abacus-column .top-bead.active {
+            transform: translateY(36px); /* move down to touch beam */
+        }
+
+        .abacus-column .bottom-bead {
+            transform: translateY(36px);
+        }
+        .abacus-column .bottom-bead.active {
+            transform: translateY(0); /* move up to touch beam */
+        }
+
+        .abacus-cover {
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1em;
+            color: #333;
+            border-radius: 12px;
+        }
+
+        .abacus-cover.show {
+            display: flex;
+        }
+
+        .abacus-footer {
+            margin-top: 12px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .abacus-number-display {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #c0392b;
+        }
+
         /* Responsive design - finer grain control */
         @media (max-width: 800px) {
             .controls {
                 grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
                 gap: 15px;
             }
+            .abacus-rail {
+                gap: 8px;
+            }
+            .abacus-column {
+                width: 46px;
+                height: 160px;
+            }
+            .abacus-bead {
+                width: 30px;
+                height: 30px;
+            }
         }
-        
+
         @media (max-width: 500px) {
             .controls {
                 grid-template-columns: 1fr 1fr;
                 gap: 12px;
             }
+            .abacus-rail {
+                gap: 6px;
+            }
         }
-        
+
         @media (max-width: 400px) {
             .controls {
                 grid-template-columns: 1fr;
@@ -147,6 +278,13 @@
             }
             .exercises {
                 grid-template-columns: 1fr;
+            }
+            .abacus-rail {
+                gap: 4px;
+            }
+            .abacus-column {
+                width: 40px;
+                height: 150px;
             }
         }
     </style>
@@ -237,6 +375,42 @@
         </div>
         <div id="div-exercises" class="exercises"></div>
         <button id="show-all-div" class="show-all-btn">Show All Answers <span class="eye-icon">👁️</span></button>
+    </div>
+
+    <!-- Flashcards (Abacus) Section -->
+    <div class="section abacus-section" id="abacus-section">
+        <h2>Flashcards — Abacus</h2>
+        <div class="abacus-controls">
+            <div>
+                <label for="abacus-digits">Digits (1–6):</label>
+                <input type="number" id="abacus-digits" min="1" max="6" value="3">
+            </div>
+            <div>
+                <label for="abacus-duration">Show for (seconds):</label>
+                <input type="number" id="abacus-duration" min="1" max="10" value="3">
+            </div>
+            <div>
+                <label>&nbsp;</label>
+                <div class="generate-btn-container">
+                    <button id="generate-abacus-btn">Generate Abacus Flashcard</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="abacus" id="abacus-display" aria-live="polite">
+            <div class="abacus-rail" id="abacus-rail">
+                <!-- columns generated dynamically -->
+            </div>
+
+            <div class="abacus-cover" id="abacus-cover">Memorize the beads... (hidden)</div>
+
+            <div class="abacus-footer">
+                <div>
+                    <button id="show-abacus-answer" class="show-answer-btn">Show Answer <span class="eye-icon">👁️</span></button>
+                </div>
+                <div class="abacus-number-display" id="abacus-number-display" aria-hidden="true"></div>
+            </div>
+        </div>
     </div>
 
     <footer>
@@ -573,7 +747,148 @@
             return div;
         }
 
-        // ===== EVENT LISTENERS =====
+        // ===== ABACUS FLASHCARD FUNCTIONS =====
+
+        // Create columns for the abacus (n digits)
+        function buildAbacusColumns(n) {
+            const rail = document.getElementById('abacus-rail');
+            rail.innerHTML = '';
+            for (let i = 0; i < n; i++) {
+                const col = document.createElement('div');
+                col.className = 'abacus-column';
+                col.dataset.index = i;
+
+                // top space with top bead
+                const topSpace = document.createElement('div');
+                topSpace.className = 'abacus-top-space';
+                const topBead = document.createElement('div');
+                topBead.className = 'abacus-bead top-bead';
+                topBead.setAttribute('aria-hidden', 'true');
+                topSpace.appendChild(topBead);
+
+                // beam
+                const beam = document.createElement('div');
+                beam.className = 'abacus-beam';
+
+                // bottom beads container (4 beads)
+                const bottom = document.createElement('div');
+                bottom.className = 'bottom-beads';
+                for (let j = 0; j < 4; j++) {
+                    const b = document.createElement('div');
+                    b.className = 'abacus-bead bottom-bead';
+                    b.setAttribute('aria-hidden', 'true');
+                    bottom.appendChild(b);
+                }
+
+                col.appendChild(topSpace);
+                col.appendChild(beam);
+                col.appendChild(bottom);
+                rail.appendChild(col);
+            }
+        }
+
+        // Set a column to represent a single digit (0-9)
+        function setAbacusColumn(columnElement, digit) {
+            const topBead = columnElement.querySelector('.top-bead');
+            const bottomBeads = Array.from(columnElement.querySelectorAll('.bottom-bead'));
+
+            // Top bead active if digit >= 5
+            if (digit >= 5) {
+                topBead.classList.add('active');
+            } else {
+                topBead.classList.remove('active');
+            }
+
+            // Bottom beads: number of active beads equals digit % 5 (moved up)
+            const bottomActive = digit % 5;
+            bottomBeads.forEach((b, idx) => {
+                if (idx < bottomActive) {
+                    b.classList.add('active');
+                } else {
+                    b.classList.remove('active');
+                }
+            });
+        }
+
+        // Render a whole abacus for a numeric string (like "123")
+        function renderAbacusForNumber(numStr) {
+            const rail = document.getElementById('abacus-rail');
+            const cols = Array.from(rail.querySelectorAll('.abacus-column'));
+            // Pad with leading zeros if necessary (cols length matches desired digits)
+            const padded = numStr.padStart(cols.length, '0');
+            for (let i = 0; i < cols.length; i++) {
+                const digit = parseInt(padded[i], 10);
+                setAbacusColumn(cols[i], digit);
+            }
+        }
+
+        // Generate a random number with exact number of digits
+        function generateRandomNumberWithDigits(digits) {
+            if (digits <= 1) {
+                return String(getRandomInt(0, 9));
+            }
+            const min = Math.pow(10, digits - 1);
+            const max = Math.pow(10, digits) - 1;
+            return String(getRandomInt(min, max));
+        }
+
+        let abacusTimer = null;
+
+        // Main handler for Generate Abacus Flashcard
+        document.getElementById('generate-abacus-btn').addEventListener('click', function() {
+            const digits = Math.max(1, Math.min(6, parseInt(document.getElementById('abacus-digits').value || 3)));
+            const duration = Math.max(1, Math.min(10, parseInt(document.getElementById('abacus-duration').value || 3)));
+
+            // Build columns
+            buildAbacusColumns(digits);
+
+            // Generate number
+            const numberStr = generateRandomNumberWithDigits(digits);
+
+            // Render abacus
+            renderAbacusForNumber(numberStr);
+
+            // Show number in the number display but keep it hidden
+            const numberDisplay = document.getElementById('abacus-number-display');
+            numberDisplay.textContent = numberStr;
+            numberDisplay.style.visibility = 'hidden';
+            numberDisplay.setAttribute('aria-hidden', 'true');
+
+            // Hide the "Show Answer" until user clicks; ensure button visible
+            const showBtn = document.getElementById('show-abacus-answer');
+            showBtn.style.display = 'inline-block';
+            // make sure the answer is hidden
+            const answerspan = document.getElementById('abacus-number-display');
+            answerspan.style.display = 'inline-block'; // present but invisible
+
+            // Ensure cover hidden while showing beads
+            const cover = document.getElementById('abacus-cover');
+            cover.classList.remove('show');
+
+            // Clear previous timer
+            if (abacusTimer) {
+                clearTimeout(abacusTimer);
+                abacusTimer = null;
+            }
+
+            // After duration seconds, cover the abacus (so beads are hidden)
+            abacusTimer = setTimeout(() => {
+                cover.classList.add('show');
+            }, duration * 1000);
+        });
+
+        // Show answer handler
+        document.getElementById('show-abacus-answer').addEventListener('click', function() {
+            const numberDisplay = document.getElementById('abacus-number-display');
+            numberDisplay.style.visibility = 'visible';
+            numberDisplay.setAttribute('aria-hidden', 'false');
+            // hide the cover (optionally) so user sees the beads too
+            document.getElementById('abacus-cover').classList.remove('show');
+            // hide the show button
+            this.style.display = 'none';
+        });
+
+        // ===== EVENT LISTENERS FOR OTHER SECTIONS =====
 
         // Addition generation
         document.getElementById('generate-add-btn').addEventListener('click', function() {
