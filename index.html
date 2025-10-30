@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
@@ -16,6 +16,7 @@
             margin: 0 auto;
             padding: 20px;
             line-height: 1.6;
+            background: #ffffff;
         }
         h1, h2 {
             color: #2c3e50;
@@ -54,6 +55,7 @@
             border: 1px solid #ddd;
             width: 100%;
             box-sizing: border-box;
+            font-size: 1rem;
         }
         .input-with-label {
             display: flex;
@@ -125,7 +127,7 @@
             display: none;
         }
 
-        /* Abacus styling */
+        /* Abacus (Soroban) styling */
         .abacus-section .abacus-controls {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -137,25 +139,30 @@
         .abacus {
             position: relative;
             width: 100%;
-            max-width: 640px;
+            max-width: 740px;
             margin: 10px auto 0;
-            padding: 20px;
-            background: #e4c17a;
+            padding: 18px;
+            background: linear-gradient(180deg,#e9d59a,#e4c77a);
             border-radius: 12px;
             box-shadow: inset 0 6px 12px rgba(0,0,0,0.06), 0 2px 6px rgba(0,0,0,0.12);
             overflow: visible;
         }
 
+        /* Rail contains columns and cover; cover will only overlay rail area */
         .abacus-rail {
             display: flex;
             justify-content: center;
             gap: 12px;
-            padding: 20px 10px;
+            padding: 18px 8px;
+            position: relative; /* important: confine cover */
+            border-radius: 8px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.02), transparent);
         }
 
         .abacus-column {
-            width: 52px;
-            height: 180px;
+            width: 56px;
+            min-width: 44px;
+            height: 220px;
             position: relative;
             display: flex;
             flex-direction: column;
@@ -163,135 +170,146 @@
         }
 
         .abacus-bead {
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background: #6b3f2b;
-            box-shadow: 0 2px 0 rgba(0,0,0,0.25);
-            transition: transform 0.25s ease;
+            box-shadow: 0 3px 0 rgba(0,0,0,0.25);
+            transition: transform 0.22s ease;
             position: relative;
+            flex-shrink: 0;
         }
 
-        .abacus-top-space {
+        /* Top bead (5) - slightly different color and size */
+        .top-bead {
+            width: 36px;
             height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: #8b4f34;
+            box-shadow: 0 2px 0 rgba(0,0,0,0.2);
         }
 
-        .abacus-beam {
-            height: 6px;
-            background: #2f2f2f;
-            width: 100%;
-            margin: 6px 0;
-            border-radius: 3px;
-            box-shadow: 0 1px 0 rgba(255,255,255,0.08) inset;
+        .bottom-bead {
+            width: 36px;
+            height: 36px;
+            background: #6b3f2b;
         }
 
         .bottom-beads {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            margin-top: 6px;
+            gap: 12px;
+            margin-top: 10px;
             align-items: center;
         }
 
-        /* Default positions: top bead up, bottom beads down */
-        .abacus-column .top-bead {
-            transform: translateY(0);
-        }
-        .abacus-column .top-bead.active {
-            transform: translateY(36px); /* move down to touch beam */
-        }
-
-        .abacus-column .bottom-bead {
-            transform: translateY(36px);
-        }
-        .abacus-column .bottom-bead.active {
-            transform: translateY(0); /* move up to touch beam */
+        .abacus-beam {
+            height: 8px;
+            background: #2f2f2f;
+            width: 100%;
+            margin: 8px 0;
+            border-radius: 4px;
+            position: relative;
+            box-shadow: 0 1px 0 rgba(255,255,255,0.08) inset;
         }
 
+        /* small white grouping dot for units/thousands/etc. placed on the beam */
+        .abacus-group-dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset;
+            opacity: 0.95;
+        }
+
+        /* Default bead positions: top bead up, bottom beads down */
+        .top-bead { transform: translateY(0); }
+        .top-bead.active { transform: translateY(36px); }
+
+        .bottom-bead { transform: translateY(36px); }
+        .bottom-bead.active { transform: translateY(0); }
+
+        /* Cover inside rail to hide beads without covering controls */
         .abacus-cover {
             position: absolute;
             inset: 0;
-            background: rgba(255,255,255,0.95);
+            background: rgba(255,255,255,0.96);
             display: none;
             align-items: center;
             justify-content: center;
-            font-size: 1.1em;
+            font-size: 1.05em;
             color: #333;
-            border-radius: 12px;
+            border-radius: 8px;
+            z-index: 8;
+            padding: 10px;
+            text-align: center;
         }
+        .abacus-cover.show { display: flex; }
 
-        .abacus-cover.show {
-            display: flex;
-        }
-
+        /* Footer with buttons and numeric answer - placed outside rail so cover won't hide it */
         .abacus-footer {
             margin-top: 12px;
             display: flex;
-            gap: 10px;
+            gap: 12px;
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
         }
+        .abacus-footer .controls-left { display: flex; gap: 8px; align-items: center; }
+
+        /* Prevent full-width buttons inside footer; override generic button width:100% */
+        .abacus-footer button {
+            width: auto !important;
+            min-width: 110px;
+            padding: 8px 12px;
+            font-size: 0.95em;
+            font-weight: bold;
+        }
+        .peek-btn {
+            background-color: #8e44ad;
+            border: none;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .peek-btn:hover { background-color: #712e93; }
+        .peek-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
         .abacus-number-display {
-            font-size: 1.3em;
-            font-weight: bold;
+            font-size: 1.25em;
+            font-weight: 800;
             color: #c0392b;
+            min-width: 110px;
+            text-align: right;
         }
 
-        /* Responsive design - finer grain control */
+        /* Responsive adjustments */
         @media (max-width: 800px) {
             .controls {
                 grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
                 gap: 15px;
             }
-            .abacus-rail {
-                gap: 8px;
-            }
-            .abacus-column {
-                width: 46px;
-                height: 160px;
-            }
-            .abacus-bead {
-                width: 30px;
-                height: 30px;
-            }
+            .abacus-column { width: 46px; height: 190px; }
+            .abacus-bead, .top-bead, .bottom-bead { width: 32px; height: 32px; }
         }
-
         @media (max-width: 500px) {
-            .controls {
-                grid-template-columns: 1fr 1fr;
-                gap: 12px;
-            }
-            .abacus-rail {
-                gap: 6px;
-            }
+            .controls { grid-template-columns: 1fr 1fr; gap: 12px; }
+            .abacus-rail { gap: 8px; padding: 12px 6px; }
         }
-
         @media (max-width: 400px) {
-            .controls {
-                grid-template-columns: 1fr;
-                gap: 10px;
-            }
-            .exercises {
-                grid-template-columns: 1fr;
-            }
-            .abacus-rail {
-                gap: 4px;
-            }
-            .abacus-column {
-                width: 40px;
-                height: 150px;
-            }
+            .controls { grid-template-columns: 1fr; gap: 10px; }
+            .exercises { grid-template-columns: 1fr; }
+            .abacus-column { width: 40px; height: 160px; }
         }
     </style>
 </head>
 <body>
     <h1>Mental Math Trainer</h1>
-    
+
     <!-- Addition Section -->
     <div class="section" id="addition-section">
         <h2>Addition Exercises</h2>
@@ -322,7 +340,7 @@
         <div id="add-exercises" class="exercises"></div>
         <button id="show-all-add" class="show-all-btn">Show All Answers <span class="eye-icon">👁️</span></button>
     </div>
-    
+
     <!-- Multiplication Section -->
     <div class="section" id="multiplication-section">
         <h2>Multiplication Exercises</h2>
@@ -349,7 +367,7 @@
         <div id="mult-exercises" class="exercises"></div>
         <button id="show-all-mult" class="show-all-btn">Show All Answers <span class="eye-icon">👁️</span></button>
     </div>
-    
+
     <!-- Division Section -->
     <div class="section" id="division-section">
         <h2>Division Exercises</h2>
@@ -377,9 +395,9 @@
         <button id="show-all-div" class="show-all-btn">Show All Answers <span class="eye-icon">👁️</span></button>
     </div>
 
-    <!-- Flashcards (Abacus) Section -->
+    <!-- Flashcards (Soroban) Section -->
     <div class="section abacus-section" id="abacus-section">
-        <h2>Flashcards — Abacus</h2>
+        <h2>Flashcards — Soroban (Japanese abacus)</h2>
         <div class="abacus-controls">
             <div>
                 <label for="abacus-digits">Digits (1–6):</label>
@@ -400,13 +418,15 @@
         <div class="abacus" id="abacus-display" aria-live="polite">
             <div class="abacus-rail" id="abacus-rail">
                 <!-- columns generated dynamically -->
+                <!-- abacus-cover will be appended here by buildAbacusColumns (or present initially) -->
+                <div class="abacus-cover" id="abacus-cover">Memorize the beads... (hidden)</div>
             </div>
 
-            <div class="abacus-cover" id="abacus-cover">Memorize the beads... (hidden)</div>
-
+            <!-- moved outside the rail so the cover won't hide buttons/answer -->
             <div class="abacus-footer">
-                <div>
+                <div class="controls-left">
                     <button id="show-abacus-answer" class="show-answer-btn">Show Answer <span class="eye-icon">👁️</span></button>
+                    <button id="peek-abacus-btn" class="peek-btn">Peek Again</button>
                 </div>
                 <div class="abacus-number-display" id="abacus-number-display" aria-hidden="true"></div>
             </div>
@@ -464,7 +484,7 @@
             let runningSum = 0;
             const maxNegatives = Math.floor(numAddends / 3); // Maximum allowed negatives
             let numNegatives = 0;
-            
+
             // First, create all the addends without considering running sum
             if (type === "sd") {
                 // All single-digit numbers
@@ -482,7 +502,7 @@
                     numAddends,
                     getRandomInt(Math.floor(numAddends / 2) - 1, Math.floor(numAddends / 2) + 1)
                 ));
-                
+
                 // Create array of addend types (SD or DD)
                 let addendsTypes = [];
                 for (let i = 0; i < numAddends; i++) {
@@ -492,10 +512,10 @@
                         addendsTypes.push("sd");
                     }
                 }
-                
+
                 // Shuffle the types to ensure random mixing
                 addendsTypes = shuffleArray(addendsTypes);
-                
+
                 // Generate numbers based on the shuffled types
                 for (let i = 0; i < numAddends; i++) {
                     if (addendsTypes[i] === "dd") {
@@ -505,16 +525,16 @@
                     }
                 }
             }
-            
+
             // Sort by absolute value (descending) to prioritize larger numbers first
             addends.sort((a, b) => Math.abs(b) - Math.abs(a));
-            
+
             const finalAddends = [];
-            
+
             // Process addends in the determined order
             for (const num of addends) {
                 let finalNum = num;
-                
+
                 // Decide if this should be negative
                 if (numNegatives < maxNegatives && Math.random() < 0.3) {
                     // Only make it negative if the running sum will remain positive
@@ -523,26 +543,26 @@
                         numNegatives++;
                     }
                 }
-                
+
                 finalAddends.push(finalNum);
                 runningSum += finalNum;
             }
-            
+
             // Shuffle the final addends to ensure random order of positive and negative numbers
             // BUT we need to track the running sum to ensure it stays positive
             let validOrder = false;
             let attempts = 0;
             let bestFinalAddends = [...finalAddends];
-            
+
             while (!validOrder && attempts < 10) {
                 attempts++;
                 const testAddends = [...finalAddends];
                 shuffleArray(testAddends);
-                
+
                 // Check if this order keeps all intermediate sums positive
                 let testSum = 0;
                 let allPositive = true;
-                
+
                 for (const num of testAddends) {
                     testSum += num;
                     if (testSum < 0) {
@@ -550,14 +570,14 @@
                         break;
                     }
                 }
-                
+
                 if (allPositive) {
                     bestFinalAddends = testAddends;
                     validOrder = true;
                     break;
                 }
             }
-            
+
             // If we couldn't find a valid shuffle, we'll fall back to the original order
             return {
                 addends: bestFinalAddends,
@@ -570,7 +590,7 @@
         // Generate multiplication exercise (excluding 1 and 10)
         function generateMultiplicationExercise(type) {
             let num1, num2;
-            
+
             switch (type) {
                 case "sd_sd": // Single-digit × Single-digit
                     num1 = getRandomSingleDigit();
@@ -594,7 +614,7 @@
                     num1 = getRandomSingleDigit();
                     num2 = getRandomSingleDigit();
             }
-            
+
             return {
                 factors: [num1, num2],
                 answer: num1 * num2
@@ -606,7 +626,7 @@
         // Generate division exercise (ensuring clean division, excluding divisors 1 and 10)
         function generateDivisionExercise(type) {
             let dividend, divisor;
-            
+
             switch (type) {
                 case "dd_sd": // Double-digit ÷ Single-digit
                     divisor = getRandomSingleDigit(); // Already excludes 1
@@ -635,7 +655,7 @@
                     do {
                         divisor = getRandomInt(11, 50); // Limiting to make mental math more feasible
                     } while (divisor === 10);
-                    
+
                     const min4 = Math.ceil(1000 / divisor);
                     const max4 = Math.floor(9999 / divisor);
                     const factor4 = getRandomInt(min4, max4);
@@ -645,14 +665,14 @@
                     divisor = getRandomSingleDigit(); // Already excludes 1
                     dividend = divisor * getRandomInt(10, 99);
             }
-            
+
             // Double-check that our result is an integer
             const result = dividend / divisor;
             console.log(`Division: ${dividend} ÷ ${divisor} = ${result}`);
             if (result !== Math.floor(result)) {
                 console.error("Non-integer division result generated!");
             }
-            
+
             return {
                 dividend: dividend,
                 divisor: divisor,
@@ -660,15 +680,15 @@
             };
         }
 
-        // ===== UI FUNCTIONS =====
+        // ===== UI FUNCTIONS for arithmetic =====
 
         // Create an addition exercise HTML element
         function createAdditionExerciseElement(exercise, index) {
             const div = document.createElement('div');
             div.className = 'exercise';
-            
+
             let exerciseHtml = `<strong>${index}.</strong> `;
-            
+
             // Format the addends
             for (let i = 0; i < exercise.addends.length; i++) {
                 const num = exercise.addends[i];
@@ -678,13 +698,13 @@
                     exerciseHtml += num < 0 ? ` - ${Math.abs(num)}` : ` + ${num}`;
                 }
             }
-            
+
             exerciseHtml += ` = <span class="answer">`;
             exerciseHtml += exercise.answer;
             exerciseHtml += `</span>`;
-            
+
             div.innerHTML = exerciseHtml;
-            
+
             // Add show answer button
             const showBtn = document.createElement('button');
             showBtn.className = 'show-answer-btn';
@@ -694,7 +714,7 @@
                 showBtn.style.display = 'none';
             };
             div.appendChild(showBtn);
-            
+
             return div;
         }
 
@@ -702,15 +722,15 @@
         function createMultiplicationExerciseElement(exercise, index) {
             const div = document.createElement('div');
             div.className = 'exercise';
-            
+
             const num1 = exercise.factors[0];
             const num2 = exercise.factors[1];
-            
+
             div.innerHTML = `
                 <strong>${index}.</strong> ${num1} × ${num2} = 
                 <span class="answer">${exercise.answer}</span>
             `;
-            
+
             // Add show answer button
             const showBtn = document.createElement('button');
             showBtn.className = 'show-answer-btn';
@@ -720,7 +740,7 @@
                 showBtn.style.display = 'none';
             };
             div.appendChild(showBtn);
-            
+
             return div;
         }
 
@@ -728,12 +748,12 @@
         function createDivisionExerciseElement(exercise, index) {
             const div = document.createElement('div');
             div.className = 'exercise';
-            
+
             div.innerHTML = `
                 <strong>${index}.</strong> ${exercise.dividend} ÷ ${exercise.divisor} = 
                 <span class="answer">${exercise.answer}</span>
             `;
-            
+
             // Add show answer button
             const showBtn = document.createElement('button');
             showBtn.className = 'show-answer-btn';
@@ -743,34 +763,29 @@
                 showBtn.style.display = 'none';
             };
             div.appendChild(showBtn);
-            
+
             return div;
         }
 
-        // ===== ABACUS FLASHCARD FUNCTIONS =====
+        // ===== SOROBAN (Abacus) FUNCTIONS =====
 
-        // Create columns for the abacus (n digits)
+        // Build columns for the soroban (n digits)
         function buildAbacusColumns(n) {
             const rail = document.getElementById('abacus-rail');
+            if (!rail) return;
+
+            // Preserve cover if it exists (so it can be appended later)
+            let cover = document.getElementById('abacus-cover');
+            if (cover) cover.remove(); // remove temporarily; we'll re-append at end
+
             rail.innerHTML = '';
+
             for (let i = 0; i < n; i++) {
                 const col = document.createElement('div');
                 col.className = 'abacus-column';
                 col.dataset.index = i;
 
-                // top space with top bead
-                const topSpace = document.createElement('div');
-                topSpace.className = 'abacus-top-space';
-                const topBead = document.createElement('div');
-                topBead.className = 'abacus-bead top-bead';
-                topBead.setAttribute('aria-hidden', 'true');
-                topSpace.appendChild(topBead);
-
-                // beam
-                const beam = document.createElement('div');
-                beam.className = 'abacus-beam';
-
-                // bottom beads container (4 beads)
+                // BOTTOM: four beads (units section)
                 const bottom = document.createElement('div');
                 bottom.className = 'bottom-beads';
                 for (let j = 0; j < 4; j++) {
@@ -780,14 +795,47 @@
                     bottom.appendChild(b);
                 }
 
-                col.appendChild(topSpace);
-                col.appendChild(beam);
+                // BEAM / SEPARATOR
+                const beam = document.createElement('div');
+                beam.className = 'abacus-beam';
+
+                // Add grouping dot for units/thousands/millions...
+                // indexFromRight: 0 => units, 3 => thousands, etc.
+                const colsTotal = n;
+                const indexFromRight = colsTotal - 1 - i;
+                if (indexFromRight % 3 === 0) {
+                    const dot = document.createElement('div');
+                    dot.className = 'abacus-group-dot';
+                    beam.appendChild(dot);
+                }
+
+                // TOP: single bead
+                const topSpace = document.createElement('div');
+                topSpace.className = 'abacus-top-space';
+                const topBead = document.createElement('div');
+                topBead.className = 'abacus-bead top-bead';
+                topBead.setAttribute('aria-hidden', 'true');
+                topSpace.appendChild(topBead);
+
+                // order: bottom -> beam -> top
                 col.appendChild(bottom);
+                col.appendChild(beam);
+                col.appendChild(topSpace);
+
                 rail.appendChild(col);
             }
+
+            // Re-append cover so it overlays the rail if present
+            if (!cover) {
+                cover = document.createElement('div');
+                cover.id = 'abacus-cover';
+                cover.className = 'abacus-cover';
+                cover.textContent = 'Memorize the beads... (hidden)';
+            }
+            rail.appendChild(cover);
         }
 
-        // Set a column to represent a single digit (0-9)
+        // Set a column to represent a single digit (0-9) in soroban terms
         function setAbacusColumn(columnElement, digit) {
             const topBead = columnElement.querySelector('.top-bead');
             const bottomBeads = Array.from(columnElement.querySelectorAll('.bottom-bead'));
@@ -799,7 +847,7 @@
                 topBead.classList.remove('active');
             }
 
-            // Bottom beads: number of active beads equals digit % 5 (moved up)
+            // Bottom beads active count = digit % 5
             const bottomActive = digit % 5;
             bottomBeads.forEach((b, idx) => {
                 if (idx < bottomActive) {
@@ -814,11 +862,10 @@
         function renderAbacusForNumber(numStr) {
             const rail = document.getElementById('abacus-rail');
             const cols = Array.from(rail.querySelectorAll('.abacus-column'));
-            // Pad with leading zeros if necessary (cols length matches desired digits)
-            const padded = numStr.padStart(cols.length, '0');
+            const padded = String(numStr).padStart(cols.length, '0');
             for (let i = 0; i < cols.length; i++) {
                 const digit = parseInt(padded[i], 10);
-                setAbacusColumn(cols[i], digit);
+                setAbacusColumn(cols[i], isNaN(digit) ? 0 : digit);
             }
         }
 
@@ -832,12 +879,27 @@
             return String(getRandomInt(min, max));
         }
 
-        let abacusTimer = null;
+        // abacus timers & helpers
+        let abacusCoverTimer = null;
+        function clearAbacusCoverTimer() {
+            if (abacusCoverTimer) {
+                clearTimeout(abacusCoverTimer);
+                abacusCoverTimer = null;
+            }
+        }
+        function showAbacusCover() {
+            const cover = document.getElementById('abacus-cover');
+            if (cover) cover.classList.add('show');
+        }
+        function hideAbacusCover() {
+            const cover = document.getElementById('abacus-cover');
+            if (cover) cover.classList.remove('show');
+        }
 
         // Main handler for Generate Abacus Flashcard
         document.getElementById('generate-abacus-btn').addEventListener('click', function() {
-            const digits = Math.max(1, Math.min(6, parseInt(document.getElementById('abacus-digits').value || 3)));
-            const duration = Math.max(1, Math.min(10, parseInt(document.getElementById('abacus-duration').value || 3)));
+            const digits = Math.max(1, Math.min(6, parseInt(document.getElementById('abacus-digits').value || 3, 10)));
+            const duration = Math.max(1, Math.min(10, parseInt(document.getElementById('abacus-duration').value || 3, 10)));
 
             // Build columns
             buildAbacusColumns(digits);
@@ -854,51 +916,74 @@
             numberDisplay.style.visibility = 'hidden';
             numberDisplay.setAttribute('aria-hidden', 'true');
 
-            // Hide the "Show Answer" until user clicks; ensure button visible
+            // Ensure show answer button visible
             const showBtn = document.getElementById('show-abacus-answer');
             showBtn.style.display = 'inline-block';
-            // make sure the answer is hidden
-            const answerspan = document.getElementById('abacus-number-display');
-            answerspan.style.display = 'inline-block'; // present but invisible
+
+            // enable peek
+            const peekBtn = document.getElementById('peek-abacus-btn');
+            peekBtn.disabled = false;
 
             // Ensure cover hidden while showing beads
-            const cover = document.getElementById('abacus-cover');
-            cover.classList.remove('show');
+            hideAbacusCover();
 
             // Clear previous timer
-            if (abacusTimer) {
-                clearTimeout(abacusTimer);
-                abacusTimer = null;
-            }
+            clearAbacusCoverTimer();
 
             // After duration seconds, cover the abacus (so beads are hidden)
-            abacusTimer = setTimeout(() => {
-                cover.classList.add('show');
+            abacusCoverTimer = setTimeout(() => {
+                showAbacusCover();
+                abacusCoverTimer = null;
             }, duration * 1000);
         });
 
-        // Show answer handler
+        // Show numeric answer handler (moved outside cover)
         document.getElementById('show-abacus-answer').addEventListener('click', function() {
             const numberDisplay = document.getElementById('abacus-number-display');
+            // Reveal numeric answer
             numberDisplay.style.visibility = 'visible';
             numberDisplay.setAttribute('aria-hidden', 'false');
-            // hide the cover (optionally) so user sees the beads too
-            document.getElementById('abacus-cover').classList.remove('show');
-            // hide the show button
+            // Ensure beads are visible as well
+            clearAbacusCoverTimer();
+            hideAbacusCover();
+            // Hide the show button after revealing
             this.style.display = 'none';
+        });
+
+        // Peek Again handler: temporarily reveal beads for configured duration but do NOT reveal number
+        document.getElementById('peek-abacus-btn').addEventListener('click', function() {
+            const peekBtn = this;
+            const raw = document.getElementById('abacus-duration').value || '3';
+            const seconds = Math.max(1, Math.min(10, parseInt(raw, 10)));
+
+            // Clear any existing scheduled cover so peek starts immediately
+            clearAbacusCoverTimer();
+
+            // Show beads
+            hideAbacusCover();
+
+            // Temporarily disable peek button
+            peekBtn.disabled = true;
+
+            // Schedule re-cover
+            abacusCoverTimer = setTimeout(() => {
+                showAbacusCover();
+                abacusCoverTimer = null;
+                peekBtn.disabled = false;
+            }, seconds * 1000);
         });
 
         // ===== EVENT LISTENERS FOR OTHER SECTIONS =====
 
         // Addition generation
         document.getElementById('generate-add-btn').addEventListener('click', function() {
-            const count = parseInt(document.getElementById('add-count').value);
+            const count = parseInt(document.getElementById('add-count').value || 3, 10);
             const type = document.getElementById('add-type').value;
-            const numAddends = parseInt(document.getElementById('add-addends').value);
-            
+            const numAddends = parseInt(document.getElementById('add-addends').value || 4, 10);
+
             const exercisesContainer = document.getElementById('add-exercises');
             exercisesContainer.innerHTML = '';
-            
+
             for (let i = 1; i <= count; i++) {
                 const exercise = generateAdditionExercise(type, numAddends);
                 const element = createAdditionExerciseElement(exercise, i);
@@ -908,12 +993,12 @@
 
         // Multiplication generation
         document.getElementById('generate-mult-btn').addEventListener('click', function() {
-            const count = parseInt(document.getElementById('mult-count').value);
+            const count = parseInt(document.getElementById('mult-count').value || 3, 10);
             const type = document.getElementById('mult-type').value;
-            
+
             const exercisesContainer = document.getElementById('mult-exercises');
             exercisesContainer.innerHTML = '';
-            
+
             for (let i = 1; i <= count; i++) {
                 const exercise = generateMultiplicationExercise(type);
                 const element = createMultiplicationExerciseElement(exercise, i);
@@ -923,12 +1008,12 @@
 
         // Division generation
         document.getElementById('generate-div-btn').addEventListener('click', function() {
-            const count = parseInt(document.getElementById('div-count').value);
+            const count = parseInt(document.getElementById('div-count').value || 3, 10);
             const type = document.getElementById('div-type').value;
-            
+
             const exercisesContainer = document.getElementById('div-exercises');
             exercisesContainer.innerHTML = '';
-            
+
             for (let i = 1; i <= count; i++) {
                 const exercise = generateDivisionExercise(type);
                 const element = createDivisionExerciseElement(exercise, i);
@@ -953,20 +1038,30 @@
             const container = document.getElementById(containerId);
             const answers = container.querySelectorAll('.answer');
             const buttons = container.querySelectorAll('.show-answer-btn');
-            
+
             answers.forEach(answer => {
                 answer.style.display = 'inline';
             });
-            
+
             buttons.forEach(button => {
                 button.style.display = 'none';
             });
         }
 
-        // Initialize with some example exercises
+        // Initialize with some example exercises and initial abacus layout
         document.getElementById('generate-add-btn').click();
         document.getElementById('generate-mult-btn').click();
         document.getElementById('generate-div-btn').click();
+
+        // Build an initial abacus layout (default digits)
+        (function initAbacus() {
+            const defaultDigits = Math.max(1, Math.min(6, parseInt(document.getElementById('abacus-digits').value || 3, 10)));
+            buildAbacusColumns(defaultDigits);
+            // initial numeric display is empty/hidden
+            const numberDisplay = document.getElementById('abacus-number-display');
+            numberDisplay.textContent = ''.padStart(defaultDigits, '0');
+            numberDisplay.style.visibility = 'hidden';
+        })();
     </script>
 </body>
 </html>
