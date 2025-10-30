@@ -100,12 +100,15 @@
 
     /* left: canvas area (take remaining width), right: control stack */
     .abacus-canvas-wrap {
-      flex: 1 1 calc(100% - 170px);
-      min-width: 420px; /* ensure canvas wide enough so beads are not clipped horizontally */
+      flex: 1 1 calc(100% - 150px);
+      min-width: 360px; /* ensure canvas wide enough so beads are not clipped horizontally */
+      max-width: calc(100% - 150px);
+      box-sizing: border-box;
     }
 
     .abacus-controls-stack {
-      width: 150px; /* narrower as requested */
+      flex: 0 0 140px; 
+      width: 140px; /* narrower as requested */
       display:flex;
       flex-direction:column;
       gap:10px;
@@ -190,6 +193,7 @@
     }
     .peek-btn { background:#8e44ad; color:#fff; border:0; }
     .peek-btn:disabled { opacity:0.6; cursor:not-allowed; }
+    .generate-abacus-btn { min-width: 280px; max-width: 100%; white-space:nowrap; }
 
     .abacus-number-display { font-size:1.2rem; font-weight:800; color:#c0392b; text-align:center; padding-top:6px; }
 
