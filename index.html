@@ -13,68 +13,66 @@
   <title>Mental Math Trainer</title>
 
   <style>
-    :root {
+    :root{
       --primary: #3498db;
       --primary-dark: #2980b9;
       --accent: #8e44ad;
       --success: #27ae60;
       --control-col-1: 160px;
-      --control-col-2: 380px;
+      --control-col-2: 420px;
       --control-col-3: 160px;
+      --max-page-width: 980px;
     }
 
-    /* ---------- General layout ---------- */
-    body {
+    /* Page layout */
+    body{
       font-family: Arial, Helvetica, sans-serif;
-      max-width: 980px;
+      max-width: var(--max-page-width);
       margin: 0 auto;
       padding: 20px;
       line-height: 1.5;
       background: #fff;
-      color: #222;
+      color:#222;
     }
-
-    h1, h2 { color: #2c3e50; margin: 0 0 12px 0; }
+    h1,h2 { color:#2c3e50; margin:0 0 12px 0; }
     .section {
-      background: #f9f9f9;
-      border-radius: 10px;
-      padding: 18px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      background:#f9f9f9;
+      border-radius:10px;
+      padding:18px;
+      margin-bottom:20px;
+      box-shadow:0 2px 6px rgba(0,0,0,0.06);
     }
 
-    /* ---------- Controls grid (3 columns) ---------- */
+    /* Controls grid (three columns) */
     .controls {
-      display: grid;
+      display:grid;
       grid-template-columns: var(--control-col-1) var(--control-col-2) var(--control-col-3);
-      gap: 12px;
-      align-items: start;
-      margin-bottom: 14px;
+      gap:12px;
+      align-items:start;
+      margin-bottom:14px;
     }
     .controls > div { display:flex; flex-direction:column; }
     label { font-weight:700; margin-bottom:6px; font-size:.95rem; }
-
     input[type="number"], select, button {
-      padding: 10px 12px;
-      border-radius: 6px;
-      border: 1px solid #ddd;
-      font-size: 1rem;
-      box-sizing: border-box;
-      background: #fff;
+      padding:10px 12px;
+      border-radius:6px;
+      border:1px solid #ddd;
+      font-size:1rem;
+      box-sizing:border-box;
+      background:#fff;
     }
 
-    /* Make selects wide enough to fit longest options */
+    /* Make selects wide enough */
     .controls select {
       min-width: calc(var(--control-col-2) - 20px);
-      max-width: 100%;
-      width: auto;
+      max-width:100%;
+      width:auto;
     }
 
-    /* Ensure Number of Addends occupies third column */
-    .add-addends-wrapper { grid-column: 3; }
+    /* Ensure Number of Addends sits in 3rd column */
+    .add-addends-wrapper { grid-column:3; }
 
-    /* ---------- Generate buttons ---------- */
-    /* Generic generate container: buttons fill the available column width */
+    /* Generate buttons span full available width so they visually fill the grey area */
     .generate-btn-container {
       grid-column: 1 / -1;
       display:flex;
@@ -82,33 +80,34 @@
       margin-top:12px;
     }
     .generate-btn-container > button {
-      width: 100%;
-      min-width: 240px;
-      padding: 10px 14px;
-      border-radius: 6px;
-      background: var(--primary);
-      color: #fff;
-      border: 0;
-      cursor: pointer;
-      font-weight: 700;
-      white-space: nowrap;
+      width:100%;
+      min-width:260px;
+      padding:10px 14px;
+      border-radius:6px;
+      background:var(--primary);
+      color:#fff;
+      border:0;
+      cursor:pointer;
+      font-weight:700;
+      white-space:nowrap;
     }
-    .generate-btn-container > button:hover { background: var(--primary-dark); }
+    .generate-btn-container > button:hover { background:var(--primary-dark); }
 
-    /* Inline generate buttons for arithmetic sections: fill their column */
+    /* Inline generate buttons used in other sections: fill their column */
     .generate-btn-inline {
       display:block;
       width:100%;
       padding:10px 14px;
       border-radius:6px;
-      background: var(--primary);
+      background:var(--primary);
       color:#fff;
       border:0;
       font-weight:700;
       white-space:nowrap;
       cursor:pointer;
+      box-sizing:border-box;
     }
-    .generate-btn-inline:hover { background: var(--primary-dark); }
+    .generate-btn-inline:hover { background:var(--primary-dark); }
 
     .show-all-btn {
       background:#f39c12; color:#fff; border:0; padding:10px 14px; border-radius:6px; font-weight:700; cursor:pointer;
@@ -122,10 +121,26 @@
     }
     .exercise { background:#fff; padding:12px; border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
     .answer { display:none; color:#c0392b; font-weight:700; }
-    .show-answer-btn { background: var(--success); color:#fff; border:0; padding:8px 10px; border-radius:6px; cursor:pointer; margin-top:8px; }
+    .show-answer-btn { background:var(--success); color:#fff; border:0; padding:8px 10px; border-radius:6px; cursor:pointer; margin-top:8px; }
     .eye-icon { margin-left:6px; vertical-align:middle; }
 
-    /* ---------- Abacus (Soroban) ---------- */
+    /* ---------------- Abacus/Flashcards styles ---------------- */
+    .abacus-title { margin-bottom: 8px; } /* minor spacing */
+
+    /* Abacus controls: we'll use a custom layout (not the generic grid) to avoid overlap */
+    .abacus-controls-row {
+      display:flex;
+      gap:12px;
+      align-items:center;
+      margin-bottom:12px;
+      flex-wrap:wrap;
+    }
+    .abacus-controls-row .field { display:flex; flex-direction:column; }
+    .abacus-controls-row .field.small { width:120px; } /* narrower show-for field so button fits next to it */
+    .abacus-controls-row .field.medium { width:160px; } /* digits field */
+    .abacus-controls-row .field.flex { flex:1 1 auto; min-width:180px; }
+
+    /* Main abacus wrapper: left canvas, right vertical controls */
     .abacus-wrapper {
       display:flex;
       gap:14px;
@@ -134,15 +149,12 @@
       flex-wrap:nowrap;
     }
 
-    /* Canvas left */
     .abacus-canvas-wrap {
-      flex: 1 1 calc(100% - 160px);
-      min-width: 340px;
-      max-width: calc(100% - 160px);
+      flex:1 1 calc(100% - 150px);
+      min-width:320px;
       box-sizing:border-box;
     }
 
-    /* Right controls stack */
     .abacus-controls-stack {
       flex: 0 0 140px;
       display:flex;
@@ -152,13 +164,13 @@
     }
 
     .abacus {
-      position: relative;
-      border-radius: 12px;
+      position:relative;
+      border-radius:12px;
       background: linear-gradient(180deg,#e9d59a,#e4c77a);
-      padding: 24px 12px 40px;
+      padding:24px 12px 40px;
       box-shadow: inset 0 6px 12px rgba(0,0,0,0.06), 0 3px 8px rgba(0,0,0,0.08);
       overflow: visible;
-      min-height: 460px; /* tall enough so beads fit */
+      min-height:480px; /* increased so beads fit vertically comfortably */
     }
 
     .abacus-rail {
@@ -171,9 +183,9 @@
     }
 
     .abacus-column {
-      width:66px;
-      min-width:46px;
-      height:400px;
+      width:70px;
+      min-width:48px;
+      height:420px;
       display:flex;
       flex-direction:column;
       align-items:center;
@@ -182,39 +194,32 @@
     }
 
     .abacus-bead {
-      width:46px; height:46px; border-radius:50%;
+      width:48px; height:48px; border-radius:50%;
       background:#6b3f2b; box-shadow:0 3px 0 rgba(0,0,0,0.25);
       transition: transform .22s ease, opacity .12s;
       flex-shrink:0;
       display:block;
       opacity:1;
     }
-    .top-bead { width:40px; height:40px; background:#8b4f34; box-shadow:0 2px 0 rgba(0,0,0,0.2); }
-    .bottom-bead { width:40px; height:40px; background:#6b3f2b; }
+    .top-bead { width:42px; height:42px; background:#8b4f34; box-shadow:0 2px 0 rgba(0,0,0,0.2); }
+    .bottom-bead { width:42px; height:42px; background:#6b3f2b; }
 
-    .top-space { height:108px; display:flex; align-items:center; justify-content:center; }
+    .top-space { height:116px; display:flex; align-items:center; justify-content:center; }
     .bottom-beads { display:flex; flex-direction:column; gap:14px; margin-top:8px; align-items:center; }
 
     .abacus-beam { width:100%; height:10px; background:#2f2f2f; margin:8px 0; border-radius:4px; position:relative; box-shadow: 0 1px 0 rgba(255,255,255,0.08) inset; }
     .abacus-group-dot { position:absolute; width:8px; height:8px; border-radius:50%; background:#fff; top:50%; left:50%; transform:translate(-50%,-50%); box-shadow:0 0 0 1px rgba(255,255,255,0.08) inset; }
 
-    /* Thin rod remains visible for each column even when beads hidden */
-    .abacus-rod {
-      position:absolute; width:3px; top:8px; bottom:8px; left:50%; transform:translateX(-50%);
-      background: rgba(47,47,47,0.35); border-radius:2px; z-index:1; pointer-events:none;
-    }
+    .abacus-rod { position:absolute; width:3px; top:8px; bottom:8px; left:50%; transform:translateX(-50%); background: rgba(47,47,47,0.35); border-radius:2px; z-index:1; pointer-events:none; }
 
-    /* Movement */
-    .top-bead { transform: translateY(-52px); }
+    /* Movement transforms for beads - active class used */
+    .top-bead { transform: translateY(-56px); }
     .top-bead.active { transform: translateY(0); }
-    .bottom-bead { transform: translateY(52px); }
+    .bottom-bead { transform: translateY(56px); }
     .bottom-bead.active { transform: translateY(0); }
 
-    /* IMPORTANT: DO NOT render beads for digit 0.
-       When a column represents 0, hide/remove beads (CSS hides if present).
-       Structure (rod, beam) stays so numbers like 702 remain readable.
-    */
-    .abacus-column.zero .abacus-bead { display: none; }
+    /* When digit is zero, we won't render bead elements (JS will remove them) */
+    .abacus-column.zero { /* styling for empty column if needed */ }
 
     /* Cover */
     .abacus-cover {
@@ -242,15 +247,14 @@
       white-space:nowrap;
       cursor:pointer;
     }
-    /* Show Answer (next to abacus) should be green like other show-answer buttons */
-    .abacus-controls-stack .show-answer-btn { background: var(--success); color:#fff; }
+    .abacus-controls-stack .show-answer-btn { background: var(--success); color:#fff; } /* green */
     .abacus-controls-stack .peek-btn { background: var(--accent); color:#fff; }
     .abacus-controls-stack .peek-btn:disabled { opacity:0.6; cursor:not-allowed; }
 
     .abacus-number-display { font-size:1.15rem; font-weight:800; color:#c0392b; text-align:center; padding-top:6px; }
 
-    /* ---------- Responsive ---------- */
-    @media (max-width:980px) {
+    /* ---------------- Responsive ---------------- */
+    @media (max-width:980px){
       .controls { grid-template-columns: 160px minmax(160px,1fr) 140px; }
       .controls select { min-width:220px; }
       .abacus-wrapper { flex-direction:column; }
@@ -260,8 +264,8 @@
       .abacus-rod { display:none; }
     }
 
-    @media (max-width:520px) {
-      .controls { grid-template-columns: 1fr 1fr; gap:10px; }
+    @media (max-width:520px){
+      .controls { grid-template-columns:1fr 1fr; gap:10px; }
       .controls select { min-width:0; width:100%; }
       .add-addends-wrapper { grid-column:auto; margin-left:0; }
       .abacus-column { width:48px; height:300px; }
@@ -368,25 +372,27 @@
     </div>
   </div>
 
-  <!-- Abacus Section -->
+  <!-- Flashcards Section -->
   <div class="section abacus-section" id="abacus-section">
-    <h2>Flashcards — Soroban (Japanese abacus)</h2>
+    <h2 class="abacus-title">Flashcards</h2>
 
-    <div class="controls abacus-controls">
-      <div>
+    <!-- custom abacus controls row (aligned: show-for and button side-by-side) -->
+    <div class="abacus-controls-row">
+      <div class="field medium">
         <label for="abacus-digits">Digits (1–6):</label>
         <input type="number" id="abacus-digits" min="1" max="6" value="3">
       </div>
 
-      <div>
+      <div class="field small">
         <label for="abacus-duration">Show for (seconds):</label>
         <input type="number" id="abacus-duration" min="1" max="10" value="5">
       </div>
 
-      <div>
-        <label>&nbsp;</label>
-        <div class="generate-btn-container">
-          <button id="generate-abacus-btn">Generate Flashcard</button>
+      <!-- generate button aligned next to the show-for field -->
+      <div class="field">
+        <label style="visibility:hidden; height:0; margin:0;">.</label>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button id="generate-abacus-btn" style="padding:10px 12px; min-width:140px;">Generate Flashcard</button>
         </div>
       </div>
     </div>
@@ -397,6 +403,7 @@
           <div class="abacus-rail" id="abacus-rail">
             <!-- columns inserted dynamically -->
           </div>
+
           <div class="abacus-cover" id="abacus-cover">Memorize the beads... (hidden)</div>
         </div>
       </div>
@@ -415,269 +422,238 @@
 
   <script>
     // Utilities
-    function getRandomInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
-    function shuffleArray(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+    function getRandomInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+    function shuffleArray(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
 
     // Random helpers
-    function getRandomSingleDigit() { return getRandomInt(2, 9); }
-    function getRandomDoubleDigit() { return getRandomInt(11, 99); }
-    function getRandomTripleDigit() { return getRandomInt(100, 999); }
-    function getRandomFourDigit() { return getRandomInt(1000, 9999); }
+    function getRandomSingleDigit(){ return getRandomInt(2,9); }
+    function getRandomDoubleDigit(){ return getRandomInt(11,99); }
+    function getRandomTripleDigit(){ return getRandomInt(100,999); }
+    function getRandomFourDigit(){ return getRandomInt(1000,9999); }
 
-    // Addition generator (kept original logic)
-    function generateAdditionExercise(type, numAddends) {
-      let addends = [], runningSum = 0;
-      const maxNegatives = Math.floor(numAddends / 3);
+    // Addition generator
+    function generateAdditionExercise(type, numAddends){
+      let addends=[], runningSum=0;
+      const maxNegatives = Math.floor(numAddends/3);
       let numNegatives = 0;
-
-      if (type === "sd") {
-        for (let i = 0; i < numAddends; i++) addends.push(getRandomSingleDigit());
-      } else if (type === "dd") {
-        for (let i = 0; i < numAddends; i++) addends.push(getRandomDoubleDigit());
-      } else {
-        const doubleDigitCount = Math.max(0, Math.min(numAddends, getRandomInt(Math.max(0, Math.floor(numAddends / 2) - 1), Math.floor(numAddends / 2) + 1)));
+      if(type==='sd'){ for(let i=0;i<numAddends;i++) addends.push(getRandomSingleDigit()); }
+      else if(type==='dd'){ for(let i=0;i<numAddends;i++) addends.push(getRandomDoubleDigit()); }
+      else {
+        const doubleDigitCount = Math.max(0, Math.min(numAddends, getRandomInt(Math.max(0,Math.floor(numAddends/2)-1), Math.floor(numAddends/2)+1)));
         let types = [];
-        for (let i = 0; i < numAddends; i++) types.push(i < doubleDigitCount ? 'dd' : 'sd');
+        for(let i=0;i<numAddends;i++) types.push(i<doubleDigitCount ? 'dd' : 'sd');
         types = shuffleArray(types);
-        for (let i = 0; i < numAddends; i++) addends.push(types[i] === 'dd' ? getRandomDoubleDigit() : getRandomSingleDigit());
+        for(let i=0;i<numAddends;i++) addends.push(types[i]==='dd' ? getRandomDoubleDigit() : getRandomSingleDigit());
       }
-
-      addends.sort((a, b) => Math.abs(b) - Math.abs(a));
-      const finalAddends = [];
-
-      for (const num of addends) {
+      addends.sort((a,b)=>Math.abs(b)-Math.abs(a));
+      const finalAddends=[];
+      for(const num of addends){
         let finalNum = num;
-        if (numNegatives < maxNegatives && Math.random() < 0.3) {
-          if (runningSum > num) { finalNum = -num; numNegatives++; }
+        if(numNegatives < maxNegatives && Math.random() < 0.3){
+          if(runningSum > num){ finalNum = -num; numNegatives++; }
         }
         finalAddends.push(finalNum);
         runningSum += finalNum;
       }
-
-      let bestFinalAddends = [...finalAddends];
-      let attempts = 0;
-      while (attempts < 10) {
-        attempts++;
-        const testAddends = [...finalAddends]; shuffleArray(testAddends);
-        let testSum = 0, allPositive = true;
-        for (const n of testAddends) { testSum += n; if (testSum < 0) { allPositive = false; break; } }
-        if (allPositive) { bestFinalAddends = testAddends; break; }
+      let best = [...finalAddends], attempts=0;
+      while(attempts<10){
+        attempts++; const test=[...finalAddends]; shuffleArray(test);
+        let sum=0, ok=true; for(const n of test){ sum+=n; if(sum<0){ ok=false; break; } }
+        if(ok){ best=test; break; }
       }
-
-      return { addends: bestFinalAddends, answer: bestFinalAddends.reduce((s, n) => s + n, 0) };
+      return { addends: best, answer: best.reduce((s,n)=>s+n,0) };
     }
 
-    function generateMultiplicationExercise(type) {
-      let a, b;
-      switch (type) {
-        case 'sd_sd': a = getRandomSingleDigit(); b = getRandomSingleDigit(); break;
-        case 'dd_sd': a = getRandomDoubleDigit(); b = getRandomSingleDigit(); break;
-        case 'td_sd': a = getRandomTripleDigit(); b = getRandomSingleDigit(); break;
-        case 'dd_dd': a = getRandomDoubleDigit(); do { b = getRandomDoubleDigit(); } while (b === 10); break;
-        default: a = getRandomSingleDigit(); b = getRandomSingleDigit();
+    function generateMultiplicationExercise(type){
+      let a,b;
+      switch(type){
+        case 'sd_sd': a=getRandomSingleDigit(); b=getRandomSingleDigit(); break;
+        case 'dd_sd': a=getRandomDoubleDigit(); b=getRandomSingleDigit(); break;
+        case 'td_sd': a=getRandomTripleDigit(); b=getRandomSingleDigit(); break;
+        case 'dd_dd': a=getRandomDoubleDigit(); do{ b=getRandomDoubleDigit(); } while(b===10); break;
+        default: a=getRandomSingleDigit(); b=getRandomSingleDigit();
       }
-      return { factors: [a, b], answer: a * b };
+      return { factors:[a,b], answer: a*b };
     }
 
-    function generateDivisionExercise(type) {
+    function generateDivisionExercise(type){
       let dividend, divisor;
-      switch (type) {
+      switch(type){
         case 'dd_sd':
-          divisor = getRandomSingleDigit(); { const min = Math.ceil(10 / divisor), max = Math.floor(99 / divisor); const f = getRandomInt(min, max); dividend = divisor * f; } break;
+          divisor = getRandomSingleDigit(); { const min=Math.ceil(10/divisor), max=Math.floor(99/divisor); const f=getRandomInt(min,max); dividend = divisor * f; } break;
         case 'td_sd':
-          divisor = getRandomSingleDigit(); { const min = Math.ceil(100 / divisor), max = Math.floor(999 / divisor); const f = getRandomInt(min, max); dividend = divisor * f; } break;
+          divisor = getRandomSingleDigit(); { const min=Math.ceil(100/divisor), max=Math.floor(999/divisor); const f=getRandomInt(min,max); dividend = divisor * f; } break;
         case 'fd_sd':
-          divisor = getRandomSingleDigit(); { const min = Math.ceil(1000 / divisor), max = Math.floor(9999 / divisor); const f = getRandomInt(min, max); dividend = divisor * f; } break;
+          divisor = getRandomSingleDigit(); { const min=Math.ceil(1000/divisor), max=Math.floor(9999/divisor); const f=getRandomInt(min,max); dividend = divisor * f; } break;
         case 'fd_dd':
-          do { divisor = getRandomInt(11, 50); } while (divisor === 10);
-          { const min = Math.ceil(1000 / divisor), max = Math.floor(9999 / divisor); const f = getRandomInt(min, max); dividend = divisor * f; } break;
+          do{ divisor = getRandomInt(11,50); } while(divisor===10);
+          { const min=Math.ceil(1000/divisor), max=Math.floor(9999/divisor); const f=getRandomInt(min,max); dividend = divisor * f; } break;
         default:
-          divisor = getRandomSingleDigit(); dividend = divisor * getRandomInt(10, 99);
+          divisor = getRandomSingleDigit(); dividend = divisor * getRandomInt(10,99);
       }
-      return { dividend, divisor, answer: dividend / divisor };
+      return { dividend, divisor, answer: dividend/divisor };
     }
 
     // UI element creators
-    function createAdditionExerciseElement(ex, idx) {
-      const div = document.createElement('div'); div.className = 'exercise';
-      let html = `<strong>${idx}.</strong> `;
-      for (let i = 0; i < ex.addends.length; i++) {
-        const n = ex.addends[i];
-        if (i === 0) html += n;
-        else html += n < 0 ? ` - ${Math.abs(n)}` : ` + ${n}`;
-      }
+    function createAdditionExerciseElement(ex,index){
+      const div=document.createElement('div'); div.className='exercise';
+      let html=`<strong>${index}.</strong> `;
+      for(let i=0;i<ex.addends.length;i++){ const n=ex.addends[i]; if(i===0) html+=n; else html+=n<0?` - ${Math.abs(n)}`:` + ${n}`; }
       html += ` = <span class="answer">${ex.answer}</span>`;
       div.innerHTML = html;
-      const btn = document.createElement('button'); btn.className = 'show-answer-btn'; btn.innerHTML = 'Show Answer <span class="eye-icon">👁️</span>';
-      btn.onclick = () => { div.querySelector('.answer').style.display = 'inline'; btn.style.display = 'none'; };
+      const btn=document.createElement('button'); btn.className='show-answer-btn'; btn.innerHTML='Show Answer <span class="eye-icon">👁️</span>';
+      btn.onclick = ()=>{ div.querySelector('.answer').style.display='inline'; btn.style.display='none'; };
       div.appendChild(btn);
       return div;
     }
 
-    function createMultiplicationExerciseElement(ex, idx) {
-      const div = document.createElement('div'); div.className = 'exercise';
-      div.innerHTML = `<strong>${idx}.</strong> ${ex.factors[0]} × ${ex.factors[1]} = <span class="answer">${ex.answer}</span>`;
-      const btn = document.createElement('button'); btn.className = 'show-answer-btn'; btn.innerHTML = 'Show Answer <span class="eye-icon">👁️</span>';
-      btn.onclick = () => { div.querySelector('.answer').style.display = 'inline'; btn.style.display = 'none'; };
-      div.appendChild(btn);
-      return div;
+    function createMultiplicationExerciseElement(ex,index){
+      const div=document.createElement('div'); div.className='exercise';
+      div.innerHTML=`<strong>${index}.</strong> ${ex.factors[0]} × ${ex.factors[1]} = <span class="answer">${ex.answer}</span>`;
+      const btn=document.createElement('button'); btn.className='show-answer-btn'; btn.innerHTML='Show Answer <span class="eye-icon">👁️</span>';
+      btn.onclick = ()=>{ div.querySelector('.answer').style.display='inline'; btn.style.display='none'; };
+      div.appendChild(btn); return div;
     }
 
-    function createDivisionExerciseElement(ex, idx) {
-      const div = document.createElement('div'); div.className = 'exercise';
-      div.innerHTML = `<strong>${idx}.</strong> ${ex.dividend} ÷ ${ex.divisor} = <span class="answer">${ex.answer}</span>`;
-      const btn = document.createElement('button'); btn.className = 'show-answer-btn'; btn.innerHTML = 'Show Answer <span class="eye-icon">👁️</span>';
-      btn.onclick = () => { div.querySelector('.answer').style.display = 'inline'; btn.style.display = 'none'; };
-      div.appendChild(btn);
-      return div;
+    function createDivisionExerciseElement(ex,index){
+      const div=document.createElement('div'); div.className='exercise';
+      div.innerHTML=`<strong>${index}.</strong> ${ex.dividend} ÷ ${ex.divisor} = <span class="answer">${ex.answer}</span>`;
+      const btn=document.createElement('button'); btn.className='show-answer-btn'; btn.innerHTML='Show Answer <span class="eye-icon">👁️</span>';
+      btn.onclick = ()=>{ div.querySelector('.answer').style.display='inline'; btn.style.display='none'; };
+      div.appendChild(btn); return div;
     }
 
-    // ---------- Soroban (abacus) functions ----------
-    function buildAbacusColumns(n) {
-      const rail = document.getElementById('abacus-rail'); if (!rail) return;
+    // ---------------- Soroban (abacus) ----------------
+    function buildAbacusColumns(n){
+      const rail = document.getElementById('abacus-rail');
+      if(!rail) return;
       rail.innerHTML = '';
-      for (let i = 0; i < n; i++) {
-        const col = document.createElement('div'); col.className = 'abacus-column'; col.dataset.index = i;
+      for(let i=0;i<n;i++){
+        const col = document.createElement('div'); col.className='abacus-column'; col.dataset.index = i;
 
-        // thin rod
-        const rod = document.createElement('div'); rod.className = 'abacus-rod';
+        // thin rod visible
+        const rod = document.createElement('div'); rod.className='abacus-rod';
         col.appendChild(rod);
 
-        // top space + top bead
-        const topSpace = document.createElement('div'); topSpace.className = 'top-space';
-        const topBead = document.createElement('div'); topBead.className = 'abacus-bead top-bead';
-        topBead.setAttribute('aria-hidden', 'true');
-        topSpace.appendChild(topBead);
-
-        // beam + grouping dot
-        const beam = document.createElement('div'); beam.className = 'abacus-beam';
-        const indexFromRight = (n - 1 - i);
-        if (indexFromRight % 3 === 0) {
-          const dot = document.createElement('div'); dot.className = 'abacus-group-dot'; beam.appendChild(dot);
-        }
-
-        // bottom beads
-        const bottom = document.createElement('div'); bottom.className = 'bottom-beads';
-        for (let j = 0; j < 4; j++) {
-          const b = document.createElement('div'); b.className = 'abacus-bead bottom-bead';
-          b.setAttribute('aria-hidden', 'true');
-          bottom.appendChild(b);
-        }
-
-        // append in order: rod already appended, then top -> beam -> bottom
+        // top space (initially no bead appended)
+        const topSpace = document.createElement('div'); topSpace.className='top-space';
         col.appendChild(topSpace);
+
+        // beam
+        const beam = document.createElement('div'); beam.className='abacus-beam';
+        const indexFromRight = (n - 1 - i);
+        if(indexFromRight % 3 === 0){
+          const dot = document.createElement('div'); dot.className='abacus-group-dot'; beam.appendChild(dot);
+        }
         col.appendChild(beam);
+
+        // bottom beads container (initially empty)
+        const bottom = document.createElement('div'); bottom.className='bottom-beads';
         col.appendChild(bottom);
 
         rail.appendChild(col);
       }
     }
 
-    // When digit==0 we remove/hide beads for that column (do not render them)
-    function setAbacusColumn(columnElement, digit) {
-      if (!columnElement) return;
-      const topBead = columnElement.querySelector('.top-bead');
-      const bottomBeads = Array.from(columnElement.querySelectorAll('.bottom-bead'));
+    // Render only the beads that represent the current digit (do not render zero beads at all)
+    function setAbacusColumn(columnElement, digit){
+      if(!columnElement) return;
+      // remove any existing bead nodes first
+      const existingTop = columnElement.querySelector('.top-bead');
+      if(existingTop) existingTop.remove();
+      const existingBottoms = Array.from(columnElement.querySelectorAll('.bottom-bead'));
+      existingBottoms.forEach(b => b.remove());
 
-      if (digit === 0) {
-        // remove bead elements from DOM so they are not rendered at all
-        if (topBead) topBead.remove();
-        bottomBeads.forEach(b => b.remove());
+      // clear zero class
+      columnElement.classList.remove('zero');
+
+      if(digit === 0){
+        // do not render any beads; keep the thin rod and beam only
         columnElement.classList.add('zero');
         return;
-      } else {
-        columnElement.classList.remove('zero');
       }
 
-      // Ensure beads exist (in case they were removed before)
-      if (!topBead) {
-        const topSpace = columnElement.querySelector('.top-space');
-        if (topSpace) {
-          const newTop = document.createElement('div');
-          newTop.className = 'abacus-bead top-bead';
-          newTop.setAttribute('aria-hidden', 'true');
-          topSpace.appendChild(newTop);
-        }
+      // if digit >= 5 -> render a top bead (active)
+      const topSpace = columnElement.querySelector('.top-space');
+      if(digit >= 5){
+        const topBead = document.createElement('div');
+        topBead.className = 'abacus-bead top-bead active';
+        topBead.setAttribute('aria-hidden','true');
+        topSpace.appendChild(topBead);
       }
+
+      // render bottomActive beads (only those that indicate value), positioned as active (near beam)
+      const bottomCount = digit % 5;
       const bottomContainer = columnElement.querySelector('.bottom-beads');
-      if (bottomContainer && bottomContainer.querySelectorAll('.bottom-bead').length === 0) {
-        for (let j = 0; j < 4; j++) {
-          const b = document.createElement('div'); b.className = 'abacus-bead bottom-bead';
-          b.setAttribute('aria-hidden', 'true');
-          bottomContainer.appendChild(b);
-        }
+      for(let k=0;k<bottomCount;k++){
+        const b = document.createElement('div');
+        b.className = 'abacus-bead bottom-bead active';
+        b.setAttribute('aria-hidden','true');
+        bottomContainer.appendChild(b);
       }
-
-      const top = columnElement.querySelector('.top-bead');
-      const bottoms = Array.from(columnElement.querySelectorAll('.bottom-bead'));
-
-      if (digit >= 5) top.classList.add('active'); else top.classList.remove('active');
-
-      const bottomActive = digit % 5;
-      bottoms.forEach((b, idx) => { if (idx < bottomActive) b.classList.add('active'); else b.classList.remove('active'); });
     }
 
-    function renderAbacusForNumber(numStr) {
+    function renderAbacusForNumber(numStr){
       const rail = document.getElementById('abacus-rail');
       const cols = Array.from(rail.querySelectorAll('.abacus-column'));
       const padded = String(numStr).padStart(cols.length, '0');
-      for (let i = 0; i < cols.length; i++) {
-        const digit = parseInt(padded[i], 10);
-        setAbacusColumn(cols[i], isNaN(digit) ? 0 : digit);
+      for(let i=0;i<cols.length;i++){
+        const digit = parseInt(padded[i],10);
+        setAbacusColumn(cols[i], isNaN(digit)?0:digit);
       }
     }
 
-    function generateRandomNumberWithDigits(digits) {
-      if (digits <= 1) return String(getRandomInt(0, 9));
-      const min = Math.pow(10, digits - 1), max = Math.pow(10, digits) - 1;
+    function generateRandomNumberWithDigits(digits){
+      if(digits <= 1) return String(getRandomInt(0,9));
+      const min = Math.pow(10, digits-1), max = Math.pow(10, digits)-1;
       return String(getRandomInt(min, max));
     }
 
-    // Cover & timers
+    // Cover / timer helpers
     let abacusCoverTimer = null;
-    function clearAbacusCoverTimer() { if (abacusCoverTimer) { clearTimeout(abacusCoverTimer); abacusCoverTimer = null; } }
-    function showAbacusCover() { const c = document.getElementById('abacus-cover'); if (c) c.classList.add('show'); }
-    function hideAbacusCover() { const c = document.getElementById('abacus-cover'); if (c) c.classList.remove('show'); }
+    function clearAbacusCoverTimer(){ if(abacusCoverTimer){ clearTimeout(abacusCoverTimer); abacusCoverTimer = null; } }
+    function showAbacusCover(){ const c=document.getElementById('abacus-cover'); if(c) c.classList.add('show'); }
+    function hideAbacusCover(){ const c=document.getElementById('abacus-cover'); if(c) c.classList.remove('show'); }
 
-    // ---------- Event bindings ----------
-    // Arithmetic seeds
+    // ---------------- Event bindings ----------------
+    // Arithmetic generation
     document.getElementById('generate-add-btn').addEventListener('click', function(){
-      const count = parseInt(document.getElementById('add-count').value || 3, 10);
+      const count = parseInt(document.getElementById('add-count').value || 3,10);
       const type = document.getElementById('add-type').value;
-      const addends = parseInt(document.getElementById('add-addends').value || 4, 10);
-      const container = document.getElementById('add-exercises'); container.innerHTML = '';
-      for (let i = 1; i <= count; i++) container.appendChild(createAdditionExerciseElement(generateAdditionExercise(type, addends), i));
+      const addends = parseInt(document.getElementById('add-addends').value || 4,10);
+      const container = document.getElementById('add-exercises'); container.innerHTML='';
+      for(let i=1;i<=count;i++) container.appendChild(createAdditionExerciseElement(generateAdditionExercise(type, addends), i));
     });
 
     document.getElementById('generate-mult-btn').addEventListener('click', function(){
-      const count = parseInt(document.getElementById('mult-count').value || 3, 10);
+      const count = parseInt(document.getElementById('mult-count').value || 3,10);
       const type = document.getElementById('mult-type').value;
-      const container = document.getElementById('mult-exercises'); container.innerHTML = '';
-      for (let i = 1; i <= count; i++) container.appendChild(createMultiplicationExerciseElement(generateMultiplicationExercise(type), i));
+      const container = document.getElementById('mult-exercises'); container.innerHTML='';
+      for(let i=1;i<=count;i++) container.appendChild(createMultiplicationExerciseElement(generateMultiplicationExercise(type), i));
     });
 
     document.getElementById('generate-div-btn').addEventListener('click', function(){
-      const count = parseInt(document.getElementById('div-count').value || 3, 10);
+      const count = parseInt(document.getElementById('div-count').value || 3,10);
       const type = document.getElementById('div-type').value;
-      const container = document.getElementById('div-exercises'); container.innerHTML = '';
-      for (let i = 1; i <= count; i++) container.appendChild(createDivisionExerciseElement(generateDivisionExercise(type), i));
+      const container = document.getElementById('div-exercises'); container.innerHTML='';
+      for(let i=1;i<=count;i++) container.appendChild(createDivisionExerciseElement(generateDivisionExercise(type), i));
     });
 
-    function showAllAnswers(containerId) {
+    document.getElementById('show-all-add').addEventListener('click', ()=>showAllAnswers('add-exercises'));
+    document.getElementById('show-all-mult').addEventListener('click', ()=>showAllAnswers('mult-exercises'));
+    document.getElementById('show-all-div').addEventListener('click', ()=>showAllAnswers('div-exercises'));
+
+    function showAllAnswers(containerId){
       const c = document.getElementById(containerId);
-      if (!c) return;
-      c.querySelectorAll('.answer').forEach(a => a.style.display = 'inline');
-      c.querySelectorAll('.show-answer-btn').forEach(b => b.style.display = 'none');
+      if(!c) return;
+      c.querySelectorAll('.answer').forEach(a=>a.style.display='inline');
+      c.querySelectorAll('.show-answer-btn').forEach(b=>b.style.display='none');
     }
 
-    document.getElementById('show-all-add').addEventListener('click', () => showAllAnswers('add-exercises'));
-    document.getElementById('show-all-mult').addEventListener('click', () => showAllAnswers('mult-exercises'));
-    document.getElementById('show-all-div').addEventListener('click', () => showAllAnswers('div-exercises'));
-
-    // Abacus events
+    // Abacus generation
     document.getElementById('generate-abacus-btn').addEventListener('click', function(){
-      const digits = Math.max(1, Math.min(6, parseInt(document.getElementById('abacus-digits').value || 3, 10)));
-      const duration = Math.max(1, Math.min(10, parseInt(document.getElementById('abacus-duration').value || 5, 10)));
+      const digits = Math.max(1, Math.min(6, parseInt(document.getElementById('abacus-digits').value || 3,10)));
+      const duration = Math.max(1, Math.min(10, parseInt(document.getElementById('abacus-duration').value || 5,10)));
       buildAbacusColumns(digits);
       const numberStr = generateRandomNumberWithDigits(digits);
       renderAbacusForNumber(numberStr);
@@ -685,42 +661,44 @@
       const numberDisplay = document.getElementById('abacus-number-display');
       numberDisplay.textContent = numberStr;
       numberDisplay.style.visibility = 'hidden';
-      numberDisplay.setAttribute('aria-hidden', 'true');
+      numberDisplay.setAttribute('aria-hidden','true');
 
       document.getElementById('show-abacus-answer').style.display = 'inline-block';
       document.getElementById('peek-abacus-btn').disabled = false;
 
       hideAbacusCover();
       clearAbacusCoverTimer();
-      abacusCoverTimer = setTimeout(() => { showAbacusCover(); abacusCoverTimer = null; }, duration * 1000);
+      abacusCoverTimer = setTimeout(()=>{ showAbacusCover(); abacusCoverTimer = null; }, duration * 1000);
     });
 
+    // Show numeric answer
     document.getElementById('show-abacus-answer').addEventListener('click', function(){
       const numberDisplay = document.getElementById('abacus-number-display');
       numberDisplay.style.visibility = 'visible';
-      numberDisplay.setAttribute('aria-hidden', 'false');
+      numberDisplay.setAttribute('aria-hidden','false');
       clearAbacusCoverTimer();
       hideAbacusCover();
       this.style.display = 'none';
     });
 
+    // Peek again
     document.getElementById('peek-abacus-btn').addEventListener('click', function(){
       const btn = this;
-      const raw = parseInt(document.getElementById('abacus-duration').value || 5, 10);
+      const raw = parseInt(document.getElementById('abacus-duration').value || 5,10);
       const seconds = Math.max(1, Math.min(10, raw));
       clearAbacusCoverTimer();
       hideAbacusCover();
       btn.disabled = true;
-      abacusCoverTimer = setTimeout(() => { showAbacusCover(); abacusCoverTimer = null; btn.disabled = false; }, seconds * 1000);
+      abacusCoverTimer = setTimeout(()=>{ showAbacusCover(); abacusCoverTimer = null; btn.disabled = false; }, seconds * 1000);
     });
 
-    // ---------- Initialization ----------
+    // ---------------- Initialization ----------------
     document.getElementById('generate-add-btn').click();
     document.getElementById('generate-mult-btn').click();
     document.getElementById('generate-div-btn').click();
 
     (function initAbacus(){
-      const defaultDigits = Math.max(1, Math.min(6, parseInt(document.getElementById('abacus-digits').value || 3, 10)));
+      const defaultDigits = Math.max(1, Math.min(6, parseInt(document.getElementById('abacus-digits').value || 3,10)));
       buildAbacusColumns(defaultDigits);
       const numberDisplay = document.getElementById('abacus-number-display');
       numberDisplay.textContent = ''.padStart(defaultDigits, '0');
