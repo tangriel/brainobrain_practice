@@ -35,7 +35,7 @@
       color:#222;
     }
     h1,h2 { color:#2c3e50; margin:0 0 12px 0; }
-    .section {
+    .section{
       background:#f9f9f9;
       border-radius:10px;
       padding:18px;
@@ -44,16 +44,16 @@
     }
 
     /* Controls grid (three columns) */
-    .controls {
+    .controls{
       display:grid;
       grid-template-columns: var(--control-col-1) var(--control-col-2) var(--control-col-3);
       gap:12px;
       align-items:start;
       margin-bottom:14px;
     }
-    .controls > div { display:flex; flex-direction:column; }
-    label { font-weight:700; margin-bottom:6px; font-size:.95rem; }
-    input[type="number"], select, button {
+    .controls > div{ display:flex; flex-direction:column; }
+    label{ font-weight:700; margin-bottom:6px; font-size:.95rem; }
+    input[type="number"], select, button{
       padding:10px 12px;
       border-radius:6px;
       border:1px solid #ddd;
@@ -63,25 +63,26 @@
     }
 
     /* Make selects wide enough */
-    .controls select {
+    .controls select{
       min-width: calc(var(--control-col-2) - 20px);
       max-width:100%;
       width:auto;
     }
 
     /* Ensure Number of Addends sits in 3rd column */
-    .add-addends-wrapper { grid-column:3; }
+    .add-addends-wrapper{ grid-column:3; }
 
-    /* Generate buttons span full available width so they visually fill the grey area */
-    .generate-btn-container {
+    /* Generate buttons span full available width (fills grey area) */
+    .generate-btn-container{
       grid-column: 1 / -1;
       display:flex;
       justify-content:center;
       margin-top:12px;
     }
-    .generate-btn-container > button {
-      width:100%;
-      min-width:260px;
+    .generate-btn-container > button{
+      width: 100%;
+      max-width: none;           /* removed cap so it fills the container */
+      min-width: 260px;
       padding:10px 14px;
       border-radius:6px;
       background:var(--primary);
@@ -90,11 +91,12 @@
       cursor:pointer;
       font-weight:700;
       white-space:nowrap;
+      box-sizing:border-box;
     }
-    .generate-btn-container > button:hover { background:var(--primary-dark); }
+    .generate-btn-container > button:hover{ background:var(--primary-dark); }
 
-    /* Inline generate buttons used in other sections: fill their column */
-    .generate-btn-inline {
+    /* Inline generate buttons for arithmetic sections (fill their column) */
+    .generate-btn-inline{
       display:block;
       width:100%;
       padding:10px 14px;
@@ -107,41 +109,34 @@
       cursor:pointer;
       box-sizing:border-box;
     }
-    .generate-btn-inline:hover { background:var(--primary-dark); }
+    .generate-btn-inline:hover{ background:var(--primary-dark); }
 
-    .show-all-btn {
+    .show-all-btn{
       background:#f39c12; color:#fff; border:0; padding:10px 14px; border-radius:6px; font-weight:700; cursor:pointer;
     }
 
-    .exercises {
+    .exercises{
       display:grid;
       grid-template-columns: repeat(auto-fill, minmax(220px,1fr));
       gap:12px;
       margin-top:8px;
     }
-    .exercise { background:#fff; padding:12px; border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
-    .answer { display:none; color:#c0392b; font-weight:700; }
-    .show-answer-btn { background:var(--success); color:#fff; border:0; padding:8px 10px; border-radius:6px; cursor:pointer; margin-top:8px; }
-    .eye-icon { margin-left:6px; vertical-align:middle; }
+    .exercise{ background:#fff; padding:12px; border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
+    .answer{ display:none; color:#c0392b; font-weight:700; }
+    .show-answer-btn{ background:var(--success); color:#fff; border:0; padding:8px 10px; border-radius:6px; cursor:pointer; margin-top:8px; }
+    .eye-icon{ margin-left:6px; vertical-align:middle; }
 
-    /* ---------------- Abacus/Flashcards styles ---------------- */
-    .abacus-title { margin-bottom: 8px; } /* minor spacing */
+    /* ---------- Abacus / Flashcards ---------- */
+    .abacus-title{ margin-bottom:8px; }
 
-    /* Abacus controls: we'll use a custom layout (not the generic grid) to avoid overlap */
-    .abacus-controls-row {
-      display:flex;
-      gap:12px;
-      align-items:center;
-      margin-bottom:12px;
-      flex-wrap:wrap;
-    }
-    .abacus-controls-row .field { display:flex; flex-direction:column; }
-    .abacus-controls-row .field.small { width:120px; } /* narrower show-for field so button fits next to it */
-    .abacus-controls-row .field.medium { width:160px; } /* digits field */
-    .abacus-controls-row .field.flex { flex:1 1 auto; min-width:180px; }
+    /* Custom small control row so label and button align */
+    .abacus-controls-row{ display:flex; gap:12px; align-items:flex-end; margin-bottom:12px; flex-wrap:wrap; }
+    .abacus-controls-row .field{ display:flex; flex-direction:column; }
+    .abacus-controls-row .field.small{ width:160px; } /* increased so label doesn't wrap */
+    .abacus-controls-row .field.medium{ width:160px; }
+    .abacus-controls-row .field.flex{ flex:1 1 auto; min-width:180px; }
 
-    /* Main abacus wrapper: left canvas, right vertical controls */
-    .abacus-wrapper {
+    .abacus-wrapper{
       display:flex;
       gap:14px;
       align-items:flex-start;
@@ -149,31 +144,31 @@
       flex-wrap:nowrap;
     }
 
-    .abacus-canvas-wrap {
+    .abacus-canvas-wrap{
       flex:1 1 calc(100% - 150px);
       min-width:320px;
       box-sizing:border-box;
     }
 
-    .abacus-controls-stack {
-      flex: 0 0 140px;
+    .abacus-controls-stack{
+      flex:0 0 140px;
       display:flex;
       flex-direction:column;
       gap:10px;
       align-items:stretch;
     }
 
-    .abacus {
+    .abacus{
       position:relative;
       border-radius:12px;
       background: linear-gradient(180deg,#e9d59a,#e4c77a);
       padding:24px 12px 40px;
       box-shadow: inset 0 6px 12px rgba(0,0,0,0.06), 0 3px 8px rgba(0,0,0,0.08);
       overflow: visible;
-      min-height:480px; /* increased so beads fit vertically comfortably */
+      min-height:480px;
     }
 
-    .abacus-rail {
+    .abacus-rail{
       display:flex;
       gap:12px;
       justify-content:center;
@@ -182,7 +177,7 @@
       position:relative;
     }
 
-    .abacus-column {
+    .abacus-column{
       width:70px;
       min-width:48px;
       height:420px;
@@ -193,7 +188,7 @@
       box-sizing:border-box;
     }
 
-    .abacus-bead {
+    .abacus-bead{
       width:48px; height:48px; border-radius:50%;
       background:#6b3f2b; box-shadow:0 3px 0 rgba(0,0,0,0.25);
       transition: transform .22s ease, opacity .12s;
@@ -201,28 +196,26 @@
       display:block;
       opacity:1;
     }
-    .top-bead { width:42px; height:42px; background:#8b4f34; box-shadow:0 2px 0 rgba(0,0,0,0.2); }
-    .bottom-bead { width:42px; height:42px; background:#6b3f2b; }
+    .top-bead{ width:42px; height:42px; background:#8b4f34; box-shadow:0 2px 0 rgba(0,0,0,0.2); }
+    .bottom-bead{ width:42px; height:42px; background:#6b3f2b; }
 
-    .top-space { height:116px; display:flex; align-items:center; justify-content:center; }
-    .bottom-beads { display:flex; flex-direction:column; gap:14px; margin-top:8px; align-items:center; }
+    .top-space{ height:116px; display:flex; align-items:center; justify-content:center; }
+    .bottom-beads{ display:flex; flex-direction:column; gap:14px; margin-top:8px; align-items:center; }
 
-    .abacus-beam { width:100%; height:10px; background:#2f2f2f; margin:8px 0; border-radius:4px; position:relative; box-shadow: 0 1px 0 rgba(255,255,255,0.08) inset; }
-    .abacus-group-dot { position:absolute; width:8px; height:8px; border-radius:50%; background:#fff; top:50%; left:50%; transform:translate(-50%,-50%); box-shadow:0 0 0 1px rgba(255,255,255,0.08) inset; }
+    .abacus-beam{ width:100%; height:10px; background:#2f2f2f; margin:8px 0; border-radius:4px; position:relative; box-shadow: 0 1px 0 rgba(255,255,255,0.08) inset; }
+    .abacus-group-dot{ position:absolute; width:8px; height:8px; border-radius:50%; background:#fff; top:50%; left:50%; transform:translate(-50%,-50%); box-shadow:0 0 0 1px rgba(255,255,255,0.08) inset; }
 
-    .abacus-rod { position:absolute; width:3px; top:8px; bottom:8px; left:50%; transform:translateX(-50%); background: rgba(47,47,47,0.35); border-radius:2px; z-index:1; pointer-events:none; }
+    .abacus-rod{ position:absolute; width:3px; top:8px; bottom:8px; left:50%; transform:translateX(-50%); background: rgba(47,47,47,0.35); border-radius:2px; z-index:1; pointer-events:none; }
 
-    /* Movement transforms for beads - active class used */
-    .top-bead { transform: translateY(-56px); }
-    .top-bead.active { transform: translateY(0); }
-    .bottom-bead { transform: translateY(56px); }
-    .bottom-bead.active { transform: translateY(0); }
+    .top-bead{ transform: translateY(-56px); }
+    .top-bead.active{ transform: translateY(0); }
+    .bottom-bead{ transform: translateY(56px); }
+    .bottom-bead.active{ transform: translateY(0); }
 
-    /* When digit is zero, we won't render bead elements (JS will remove them) */
-    .abacus-column.zero { /* styling for empty column if needed */ }
+    /* zero columns: JS removes beads; class kept for potential styling */
+    .abacus-column.zero{}
 
-    /* Cover */
-    .abacus-cover {
+    .abacus-cover{
       position:absolute;
       inset:0;
       background: rgba(255,255,255,0.995);
@@ -235,10 +228,9 @@
       pointer-events:auto;
       text-align:center;
     }
-    .abacus-cover.show { display:flex; }
+    .abacus-cover.show{ display:flex; }
 
-    /* Right control buttons */
-    .abacus-controls-stack button {
+    .abacus-controls-stack button{
       width:100% !important;
       padding:10px 12px;
       font-weight:700;
@@ -247,37 +239,37 @@
       white-space:nowrap;
       cursor:pointer;
     }
-    .abacus-controls-stack .show-answer-btn { background: var(--success); color:#fff; } /* green */
-    .abacus-controls-stack .peek-btn { background: var(--accent); color:#fff; }
-    .abacus-controls-stack .peek-btn:disabled { opacity:0.6; cursor:not-allowed; }
+    .abacus-controls-stack .show-answer-btn{ background: var(--success); color:#fff; }
+    .abacus-controls-stack .peek-btn{ background: var(--accent); color:#fff; }
+    .abacus-controls-stack .peek-btn:disabled{ opacity:0.6; cursor:not-allowed; }
 
-    .abacus-number-display { font-size:1.15rem; font-weight:800; color:#c0392b; text-align:center; padding-top:6px; }
+    .abacus-number-display{ font-size:1.15rem; font-weight:800; color:#c0392b; text-align:center; padding-top:6px; }
 
-    /* ---------------- Responsive ---------------- */
+    /* Responsive */
     @media (max-width:980px){
-      .controls { grid-template-columns: 160px minmax(160px,1fr) 140px; }
-      .controls select { min-width:220px; }
-      .abacus-wrapper { flex-direction:column; }
-      .abacus-canvas-wrap { min-width:320px; max-width:100%; }
-      .abacus-controls-stack { width:100%; flex-direction:row; gap:12px; }
-      .abacus-controls-stack button { flex:1; }
-      .abacus-rod { display:none; }
+      .controls{ grid-template-columns: 160px minmax(160px,1fr) 140px; }
+      .controls select{ min-width:220px; }
+      .abacus-wrapper{ flex-direction:column; }
+      .abacus-canvas-wrap{ min-width:320px; max-width:100%; }
+      .abacus-controls-stack{ width:100%; flex-direction:row; gap:12px; }
+      .abacus-controls-stack button{ flex:1; }
+      .abacus-rod{ display:none; }
     }
 
     @media (max-width:520px){
-      .controls { grid-template-columns:1fr 1fr; gap:10px; }
-      .controls select { min-width:0; width:100%; }
-      .add-addends-wrapper { grid-column:auto; margin-left:0; }
-      .abacus-column { width:48px; height:300px; }
-      .top-space { height:64px; }
-      .abacus { min-height:260px; padding-bottom:22px; }
+      .controls{ grid-template-columns:1fr 1fr; gap:10px; }
+      .controls select{ min-width:0; width:100%; }
+      .add-addends-wrapper{ grid-column:auto; margin-left:0; }
+      .abacus-column{ width:48px; height:300px; }
+      .top-space{ height:64px; }
+      .abacus{ min-height:260px; padding-bottom:22px; }
     }
   </style>
 </head>
 <body>
   <h1>Mental Math Trainer</h1>
 
-  <!-- Addition Section -->
+  <!-- Addition -->
   <div class="section" id="addition-section">
     <h2>Addition Exercises</h2>
     <div class="controls">
@@ -314,7 +306,7 @@
     </div>
   </div>
 
-  <!-- Multiplication Section -->
+  <!-- Multiplication -->
   <div class="section" id="multiplication-section">
     <h2>Multiplication Exercises</h2>
     <div class="controls">
@@ -343,7 +335,7 @@
     </div>
   </div>
 
-  <!-- Division Section -->
+  <!-- Division -->
   <div class="section" id="division-section">
     <h2>Division Exercises</h2>
     <div class="controls">
@@ -372,11 +364,10 @@
     </div>
   </div>
 
-  <!-- Flashcards Section -->
+  <!-- Flashcards -->
   <div class="section abacus-section" id="abacus-section">
     <h2 class="abacus-title">Flashcards</h2>
 
-    <!-- custom abacus controls row (aligned: show-for and button side-by-side) -->
     <div class="abacus-controls-row">
       <div class="field medium">
         <label for="abacus-digits">Digits (1–6):</label>
@@ -388,11 +379,10 @@
         <input type="number" id="abacus-duration" min="1" max="10" value="5">
       </div>
 
-      <!-- generate button aligned next to the show-for field -->
       <div class="field">
         <label style="visibility:hidden; height:0; margin:0;">.</label>
         <div style="display:flex; align-items:center; gap:8px;">
-          <button id="generate-abacus-btn" style="padding:10px 12px; min-width:140px;">Generate Flashcard</button>
+          <button id="generate-abacus-btn" style="padding:10px 12px; min-width:140px; background:var(--primary); color:#fff; border-radius:6px; border:0;">Generate Flashcard</button>
         </div>
       </div>
     </div>
@@ -494,11 +484,11 @@
       return { dividend, divisor, answer: dividend/divisor };
     }
 
-    // UI element creators
+    // UI creators
     function createAdditionExerciseElement(ex,index){
       const div=document.createElement('div'); div.className='exercise';
       let html=`<strong>${index}.</strong> `;
-      for(let i=0;i<ex.addends.length;i++){ const n=ex.addends[i]; if(i===0) html+=n; else html+=n<0?` - ${Math.abs(n)}`:` + ${n}`; }
+      for(let i=0;i<ex.addends.length;i++){ const n=ex.addends[i]; if(i===0) html+=n; else html+= n<0?` - ${Math.abs(n)}`:` + ${n}`; }
       html += ` = <span class="answer">${ex.answer}</span>`;
       div.innerHTML = html;
       const btn=document.createElement('button'); btn.className='show-answer-btn'; btn.innerHTML='Show Answer <span class="eye-icon">👁️</span>';
@@ -523,119 +513,96 @@
       div.appendChild(btn); return div;
     }
 
-    // ---------------- Soroban (abacus) ----------------
+    // Soroban functions
     function buildAbacusColumns(n){
-      const rail = document.getElementById('abacus-rail');
-      if(!rail) return;
-      rail.innerHTML = '';
+      const rail=document.getElementById('abacus-rail'); if(!rail) return;
+      rail.innerHTML='';
       for(let i=0;i<n;i++){
-        const col = document.createElement('div'); col.className='abacus-column'; col.dataset.index = i;
-
-        // thin rod visible
-        const rod = document.createElement('div'); rod.className='abacus-rod';
-        col.appendChild(rod);
-
-        // top space (initially no bead appended)
-        const topSpace = document.createElement('div'); topSpace.className='top-space';
-        col.appendChild(topSpace);
-
-        // beam
-        const beam = document.createElement('div'); beam.className='abacus-beam';
-        const indexFromRight = (n - 1 - i);
-        if(indexFromRight % 3 === 0){
-          const dot = document.createElement('div'); dot.className='abacus-group-dot'; beam.appendChild(dot);
-        }
+        const col=document.createElement('div'); col.className='abacus-column'; col.dataset.index=i;
+        const rod=document.createElement('div'); rod.className='abacus-rod'; col.appendChild(rod);
+        const topSpace=document.createElement('div'); topSpace.className='top-space'; col.appendChild(topSpace);
+        const beam=document.createElement('div'); beam.className='abacus-beam';
+        const indexFromRight=(n-1-i);
+        if(indexFromRight%3===0){ const dot=document.createElement('div'); dot.className='abacus-group-dot'; beam.appendChild(dot); }
         col.appendChild(beam);
-
-        // bottom beads container (initially empty)
-        const bottom = document.createElement('div'); bottom.className='bottom-beads';
-        col.appendChild(bottom);
-
+        const bottom=document.createElement('div'); bottom.className='bottom-beads'; col.appendChild(bottom);
         rail.appendChild(col);
       }
     }
 
-    // Render only the beads that represent the current digit (do not render zero beads at all)
+    // Render only non-zero beads
     function setAbacusColumn(columnElement, digit){
       if(!columnElement) return;
-      // remove any existing bead nodes first
-      const existingTop = columnElement.querySelector('.top-bead');
-      if(existingTop) existingTop.remove();
-      const existingBottoms = Array.from(columnElement.querySelectorAll('.bottom-bead'));
-      existingBottoms.forEach(b => b.remove());
-
-      // clear zero class
+      // remove existing beads
+      const existingTop=columnElement.querySelector('.top-bead'); if(existingTop) existingTop.remove();
+      const existingBottoms=Array.from(columnElement.querySelectorAll('.bottom-bead')); existingBottoms.forEach(b=>b.remove());
       columnElement.classList.remove('zero');
 
-      if(digit === 0){
-        // do not render any beads; keep the thin rod and beam only
+      if(digit===0){
         columnElement.classList.add('zero');
-        return;
+        return; // do not render beads
       }
 
-      // if digit >= 5 -> render a top bead (active)
-      const topSpace = columnElement.querySelector('.top-space');
-      if(digit >= 5){
+      // top bead if >=5
+      if(digit>=5){
+        const topSpace = columnElement.querySelector('.top-space');
         const topBead = document.createElement('div');
-        topBead.className = 'abacus-bead top-bead active';
+        topBead.className='abacus-bead top-bead active';
         topBead.setAttribute('aria-hidden','true');
         topSpace.appendChild(topBead);
       }
 
-      // render bottomActive beads (only those that indicate value), positioned as active (near beam)
+      // bottom active count
       const bottomCount = digit % 5;
       const bottomContainer = columnElement.querySelector('.bottom-beads');
       for(let k=0;k<bottomCount;k++){
-        const b = document.createElement('div');
-        b.className = 'abacus-bead bottom-bead active';
-        b.setAttribute('aria-hidden','true');
+        const b=document.createElement('div'); b.className='abacus-bead bottom-bead active'; b.setAttribute('aria-hidden','true');
         bottomContainer.appendChild(b);
       }
     }
 
     function renderAbacusForNumber(numStr){
-      const rail = document.getElementById('abacus-rail');
-      const cols = Array.from(rail.querySelectorAll('.abacus-column'));
-      const padded = String(numStr).padStart(cols.length, '0');
+      const rail=document.getElementById('abacus-rail');
+      const cols=Array.from(rail.querySelectorAll('.abacus-column'));
+      const padded=String(numStr).padStart(cols.length,'0');
       for(let i=0;i<cols.length;i++){
-        const digit = parseInt(padded[i],10);
+        const digit=parseInt(padded[i],10);
         setAbacusColumn(cols[i], isNaN(digit)?0:digit);
       }
     }
 
     function generateRandomNumberWithDigits(digits){
-      if(digits <= 1) return String(getRandomInt(0,9));
-      const min = Math.pow(10, digits-1), max = Math.pow(10, digits)-1;
-      return String(getRandomInt(min, max));
+      if(digits<=1) return String(getRandomInt(0,9));
+      const min=Math.pow(10,digits-1), max=Math.pow(10,digits)-1;
+      return String(getRandomInt(min,max));
     }
 
-    // Cover / timer helpers
-    let abacusCoverTimer = null;
-    function clearAbacusCoverTimer(){ if(abacusCoverTimer){ clearTimeout(abacusCoverTimer); abacusCoverTimer = null; } }
+    // Cover timer helpers
+    let abacusCoverTimer=null;
+    function clearAbacusCoverTimer(){ if(abacusCoverTimer){ clearTimeout(abacusCoverTimer); abacusCoverTimer=null; } }
     function showAbacusCover(){ const c=document.getElementById('abacus-cover'); if(c) c.classList.add('show'); }
     function hideAbacusCover(){ const c=document.getElementById('abacus-cover'); if(c) c.classList.remove('show'); }
 
-    // ---------------- Event bindings ----------------
-    // Arithmetic generation
+    // Event bindings
     document.getElementById('generate-add-btn').addEventListener('click', function(){
-      const count = parseInt(document.getElementById('add-count').value || 3,10);
-      const type = document.getElementById('add-type').value;
-      const addends = parseInt(document.getElementById('add-addends').value || 4,10);
-      const container = document.getElementById('add-exercises'); container.innerHTML='';
+      const count=parseInt(document.getElementById('add-count').value||3,10);
+      const type=document.getElementById('add-type').value;
+      const addends=parseInt(document.getElementById('add-addends').value||4,10);
+      const container=document.getElementById('add-exercises'); container.innerHTML='';
       for(let i=1;i<=count;i++) container.appendChild(createAdditionExerciseElement(generateAdditionExercise(type, addends), i));
     });
 
     document.getElementById('generate-mult-btn').addEventListener('click', function(){
-      const count = parseInt(document.getElementById('mult-count').value || 3,10);
-      const type = document.getElementById('mult-type').value;
-      const container = document.getElementById('mult-exercises'); container.innerHTML='';
+      const count=parseInt(document.getElementById('mult-count').value||3,10);
+      const type=document.getElementById('mult-type').value;
+      const container=document.getElementById('mult-exercises'); container.innerHTML='';
       for(let i=1;i<=count;i++) container.appendChild(createMultiplicationExerciseElement(generateMultiplicationExercise(type), i));
     });
 
     document.getElementById('generate-div-btn').addEventListener('click', function(){
-      const count = parseInt(document.getElementById('div-count').value || 3,10);
-      const type = document.getElementById('div-type').value;
-      const container = document.getElementById('div-exercises'); container.innerHTML='';
+      const count=parseInt(document.getElementById('div-count').value||3,10);
+      const type=document.getElementById('div-type').value;
+      const container=document.getElementById('div-exercises'); container.innerHTML='';
       for(let i=1;i<=count;i++) container.appendChild(createDivisionExerciseElement(generateDivisionExercise(type), i));
     });
 
@@ -644,7 +611,7 @@
     document.getElementById('show-all-div').addEventListener('click', ()=>showAllAnswers('div-exercises'));
 
     function showAllAnswers(containerId){
-      const c = document.getElementById(containerId);
+      const c=document.getElementById(containerId);
       if(!c) return;
       c.querySelectorAll('.answer').forEach(a=>a.style.display='inline');
       c.querySelectorAll('.show-answer-btn').forEach(b=>b.style.display='none');
@@ -652,13 +619,13 @@
 
     // Abacus generation
     document.getElementById('generate-abacus-btn').addEventListener('click', function(){
-      const digits = Math.max(1, Math.min(6, parseInt(document.getElementById('abacus-digits').value || 3,10)));
-      const duration = Math.max(1, Math.min(10, parseInt(document.getElementById('abacus-duration').value || 5,10)));
+      const digits=Math.max(1,Math.min(6,parseInt(document.getElementById('abacus-digits').value||3,10)));
+      const duration=Math.max(1,Math.min(10,parseInt(document.getElementById('abacus-duration').value||5,10)));
       buildAbacusColumns(digits);
-      const numberStr = generateRandomNumberWithDigits(digits);
+      const numberStr=generateRandomNumberWithDigits(digits);
       renderAbacusForNumber(numberStr);
 
-      const numberDisplay = document.getElementById('abacus-number-display');
+      const numberDisplay=document.getElementById('abacus-number-display');
       numberDisplay.textContent = numberStr;
       numberDisplay.style.visibility = 'hidden';
       numberDisplay.setAttribute('aria-hidden','true');
@@ -671,9 +638,8 @@
       abacusCoverTimer = setTimeout(()=>{ showAbacusCover(); abacusCoverTimer = null; }, duration * 1000);
     });
 
-    // Show numeric answer
     document.getElementById('show-abacus-answer').addEventListener('click', function(){
-      const numberDisplay = document.getElementById('abacus-number-display');
+      const numberDisplay=document.getElementById('abacus-number-display');
       numberDisplay.style.visibility = 'visible';
       numberDisplay.setAttribute('aria-hidden','false');
       clearAbacusCoverTimer();
@@ -681,28 +647,27 @@
       this.style.display = 'none';
     });
 
-    // Peek again
     document.getElementById('peek-abacus-btn').addEventListener('click', function(){
-      const btn = this;
-      const raw = parseInt(document.getElementById('abacus-duration').value || 5,10);
-      const seconds = Math.max(1, Math.min(10, raw));
+      const btn=this;
+      const raw=parseInt(document.getElementById('abacus-duration').value||5,10);
+      const seconds=Math.max(1,Math.min(10,raw));
       clearAbacusCoverTimer();
       hideAbacusCover();
       btn.disabled = true;
-      abacusCoverTimer = setTimeout(()=>{ showAbacusCover(); abacusCoverTimer = null; btn.disabled = false; }, seconds * 1000);
+      abacusCoverTimer = setTimeout(()=>{ showAbacusCover(); abacusCoverTimer=null; btn.disabled=false; }, seconds * 1000);
     });
 
-    // ---------------- Initialization ----------------
+    // Init
     document.getElementById('generate-add-btn').click();
     document.getElementById('generate-mult-btn').click();
     document.getElementById('generate-div-btn').click();
 
     (function initAbacus(){
-      const defaultDigits = Math.max(1, Math.min(6, parseInt(document.getElementById('abacus-digits').value || 3,10)));
+      const defaultDigits=Math.max(1,Math.min(6,parseInt(document.getElementById('abacus-digits').value||3,10)));
       buildAbacusColumns(defaultDigits);
-      const numberDisplay = document.getElementById('abacus-number-display');
-      numberDisplay.textContent = ''.padStart(defaultDigits, '0');
-      numberDisplay.style.visibility = 'hidden';
+      const numberDisplay=document.getElementById('abacus-number-display');
+      numberDisplay.textContent = ''.padStart(defaultDigits,'0');
+      numberDisplay.style.visibility='hidden';
       hideAbacusCover();
     })();
   </script>
