@@ -75,16 +75,20 @@
     /* Generate buttons span full available width (fills grey area) */
     .generate-btn-container{
       grid-column: 1 / -1;
+      width: 100%; 
       display:flex;
       justify-content:center;
       margin-top:12px;
+      box-sizing: border-box; 
       justify-self: stretch;
       align-self: start;
+      display: block;
     }
     .generate-btn-container > button,
     .generate-btn-inline {
-      width: 100%;
-      max-width: none;           /* removed cap so it fills the container */
+      display: block !important; 
+      width: 100% !important; 
+      max-width: 100% !important; 
       min-width: 260px;
       padding:10px 14px;
       border-radius:6px;
