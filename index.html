@@ -210,7 +210,7 @@
     .bottom-beads{ display:flex; flex-direction:column; gap:14px; margin-top:8px; align-items:center; }
 
     .abacus-beam{ width:100%; height:10px; background:#2f2f2f; margin:8px 0; border-radius:4px; position:relative; box-shadow: 0 1px 0 rgba(255,255,255,0.08) inset; }
-    .abacus-group-dot{ position:absolute; width:8px; height:8px; border-radius:50%; background:#fff; top:50%; left:50%; transform:translate(-50%,-50%); box-shadow:0 0 0 1px rgba(255,255,255,0.08) inset; }
+    .abacus-group-dot{ position:absolute; width:8px; height:8px; border-radius:50%; background:#fff; top:50%; left:50%; transform:translate(-50%,-50%); box-shadow:0 0 0 1px rgba(255,255,255,0.08)[...] 
 
     .abacus-rod{ position:absolute; width:3px; top:8px; bottom:8px; left:50%; transform:translateX(-50%); background: rgba(47,47,47,0.35); border-radius:2px; z-index:1; pointer-events:none; }
 
@@ -436,7 +436,17 @@
       if(type==='sd'){ for(let i=0;i<numAddends;i++) addends.push(getRandomSingleDigit()); }
       else if(type==='dd'){ for(let i=0;i<numAddends;i++) addends.push(getRandomDoubleDigit()); }
       else {
-        const doubleDigitCount = Math.max(0, Math.min(numAddends, getRandomInt(Math.max(0,Math.floor(numAddends/2)-1), Math.floor(numAddends/2)+1)));
+        // choose between 50% and 75% of addends to be double-digit
+        const minDD = Math.ceil(numAddends * 0.5);
+        const maxDD = Math.floor(numAddends * 0.75);
+        let doubleDigitCount;
+        if(maxDD < minDD){
+          // fallback for very small numAddends: choose roughly half (clamped)
+          doubleDigitCount = Math.min(numAddends, Math.max(0, Math.round(numAddends/2)));
+        } else {
+          doubleDigitCount = getRandomInt(minDD, maxDD);
+        }
+
         let types = [];
         for(let i=0;i<numAddends;i++) types.push(i<doubleDigitCount ? 'dd' : 'sd');
         types = shuffleArray(types);
@@ -496,7 +506,7 @@
       const div=document.createElement('div'); div.className='exercise';
       let html=`<strong>${index}.</strong> `;
       for(let i=0;i<ex.addends.length;i++){ const n=ex.addends[i]; if(i===0) html+=n; else html+= n<0?` - ${Math.abs(n)}`:` + ${n}`; }
-      html += ` = <span class="answer">${ex.answer}</span>`;
+      html += ` = <span class=\"answer\">${ex.answer}</span>`;
       div.innerHTML = html;
       const btn=document.createElement('button'); btn.className='show-answer-btn'; btn.innerHTML='Show Answer <span class="eye-icon">👁️</span>';
       btn.onclick = ()=>{ div.querySelector('.answer').style.display='inline'; btn.style.display='none'; };
@@ -506,7 +516,7 @@
 
     function createMultiplicationExerciseElement(ex,index){
       const div=document.createElement('div'); div.className='exercise';
-      div.innerHTML=`<strong>${index}.</strong> ${ex.factors[0]} × ${ex.factors[1]} = <span class="answer">${ex.answer}</span>`;
+      div.innerHTML=`<strong>${index}.</strong> ${ex.factors[0]} × ${ex.factors[1]} = <span class=\"answer\">${ex.answer}</span>`;
       const btn=document.createElement('button'); btn.className='show-answer-btn'; btn.innerHTML='Show Answer <span class="eye-icon">👁️</span>';
       btn.onclick = ()=>{ div.querySelector('.answer').style.display='inline'; btn.style.display='none'; };
       div.appendChild(btn); return div;
@@ -514,7 +524,7 @@
 
     function createDivisionExerciseElement(ex,index){
       const div=document.createElement('div'); div.className='exercise';
-      div.innerHTML=`<strong>${index}.</strong> ${ex.dividend} ÷ ${ex.divisor} = <span class="answer">${ex.answer}</span>`;
+      div.innerHTML=`<strong>${index}.</strong> ${ex.dividend} ÷ ${ex.divisor} = <span class=\"answer\">${ex.answer}</span>`;
       const btn=document.createElement('button'); btn.className='show-answer-btn'; btn.innerHTML='Show Answer <span class="eye-icon">👁️</span>';
       btn.onclick = ()=>{ div.querySelector('.answer').style.display='inline'; btn.style.display='none'; };
       div.appendChild(btn); return div;
