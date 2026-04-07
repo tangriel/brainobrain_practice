@@ -201,7 +201,7 @@
       transition: transform .22s ease, opacity .12s;
       flex-shrink:0;
       display:block;
-      opacity=1;
+      opacity:1;
     }
     .top-bead{ width:42px; height:42px; background:#8b4f34; box-shadow:0 2px 0 rgba(0,0,0,0.2); }
     .bottom-bead{ width:42px; height:42px; background:#6b3f2b; }
@@ -220,7 +220,7 @@
     .bottom-bead.active{ transform: translateY(0); }
 
     /* zero columns: JS removes beads; class kept for potential styling */
-    .abacus-column.zero{}
+    .abacus-column.zero{ opacity:0.7; }
 
     .abacus-cover{
       position:absolute;
@@ -291,6 +291,8 @@
           <option value="sd">Single-Digit Only</option>
           <option value="dd">Double-Digit Only</option>
           <option value="mixed" selected>Single & Double-Digit Mix</option>
+          <option value="decimal10">Decimals under 10</option>
+          <option value="decimal50">Decimals under 50</option>
         </select>
       </div>
 
@@ -427,6 +429,21 @@
     function getRandomDoubleDigit(){ return getRandomInt(11,99); }
     function getRandomTripleDigit(){ return getRandomInt(100,999); }
     function getRandomFourDigit(){ return getRandomInt(1000,9999); }
+    function formatNumber(value){ return Number.isInteger(value) ? String(value) : value.toFixed(2).replace(/\.?0+$/,'').replace(/\.$/, ''); }
+    function getRandomDecimalUnder10(){
+      if(Math.random() < 0.33){ return Number((getRandomInt(101,999) / 100).toFixed(2)); }
+      return Number((getRandomInt(0,100) / 100).toFixed(2));
+    }
+    function getRandomDecimalUnder50(){
+      if(Math.random() < 0.33){ return Number((getRandomInt(101,4999) / 100).toFixed(2)); }
+      return Number((getRandomInt(0,100) / 100).toFixed(2));
+    }
+    function hasConsecutiveZeroSum(arr){
+      for(let i=1;i<arr.length;i++){
+        if(Math.abs(arr[i] + arr[i-1]) < 1e-9) return true;
+      }
+      return false;
+    }
 
     // Addition generator
     function generateAdditionExercise(type, numAddends){
@@ -435,6 +452,8 @@
       let numNegatives = 0;
       if(type==='sd'){ for(let i=0;i<numAddends;i++) addends.push(getRandomSingleDigit()); }
       else if(type==='dd'){ for(let i=0;i<numAddends;i++) addends.push(getRandomDoubleDigit()); }
+      else if(type==='decimal10'){ for(let i=0;i<numAddends;i++) addends.push(getRandomDecimalUnder10()); }
+      else if(type==='decimal50'){ for(let i=0;i<numAddends;i++) addends.push(getRandomDecimalUnder50()); }
       else {
         // choose between 50% and 75% of addends to be double-digit
         const minDD = Math.ceil(numAddends * 0.5);
@@ -462,13 +481,32 @@
         finalAddends.push(finalNum);
         runningSum += finalNum;
       }
+
       let best = [...finalAddends], attempts=0;
-      while(attempts<10){
-        attempts++; const test=[...finalAddends]; shuffleArray(test);
-        let sum=0, ok=true; for(const n of test){ sum+=n; if(sum<0){ ok=false; break; } }
+      while(attempts<20){
+        attempts++;
+        const test=[...finalAddends];
+        shuffleArray(test);
+        if(hasConsecutiveZeroSum(test)) continue;
+        let sum=0, ok=true;
+        for(const n of test){ sum += n; if(sum < 0){ ok=false; break; } }
         if(ok){ best=test; break; }
       }
-      return { addends: best, answer: best.reduce((s,n)=>s+n,0) };
+
+      if(hasConsecutiveZeroSum(best)){
+        for(let i=1;i<best.length;i++){
+          if(Math.abs(best[i] + best[i-1]) < 1e-9){
+            for(let j=i+1;j<best.length;j++){
+              if(Math.abs(best[j] + best[i-1]) >= 1e-9){
+                [best[i], best[j]] = [best[j], best[i]];
+                break;
+              }
+            }
+          }
+        }
+      }
+
+      return { addends: best, answer: Number(best.reduce((s,n)=>s+n,0).toFixed(2)) };
     }
 
     function generateMultiplicationExercise(type){
@@ -505,8 +543,13 @@
     function createAdditionExerciseElement(ex,index){
       const div=document.createElement('div'); div.className='exercise';
       let html=`<strong>${index}.</strong> `;
-      for(let i=0;i<ex.addends.length;i++){ const n=ex.addends[i]; if(i===0) html+=n; else html+= n<0?` - ${Math.abs(n)}`:` + ${n}`; }
-      html += ` = <span class=\"answer\">${ex.answer}</span>`;
+      for(let i=0;i<ex.addends.length;i++){
+        const n=ex.addends[i];
+        const display = formatNumber(Math.abs(n));
+        if(i===0) html += n < 0 ? `- ${display}` : display;
+        else html += n<0 ? ` - ${display}` : ` + ${display}`;
+      }
+      html += ` = <span class="answer">${formatNumber(ex.answer)}</span>`;
       div.innerHTML = html;
       const btn=document.createElement('button'); btn.className='show-answer-btn'; btn.innerHTML='Show Answer <span class=\"eye-icon\">👁️</span>';
       btn.onclick = ()=>{ div.querySelector('.answer').style.display='inline'; btn.style.display='none'; };
